@@ -1,5 +1,5 @@
 moviepy==1.0.3
-Pillow==10.4.0
+Pillow<10.0.0
 yt-dlp==2025.8.11
 gdown==5.2.0
 imageio==2.37.0
