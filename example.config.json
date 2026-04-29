@@ -1,48 +1,253 @@
 {
-  "output": "output/generated-video.mp4",
+  "schema_version": 2,
+  "output": "output/osv-pitch.mp4",
   "render": {
-    "size": [
-      1280,
-      720
-    ],
+    "size": [1280, 720],
     "fps": 24
   },
-  "clip_sources": [
+  "export": {
+    "preset": "slow",
+    "crf": 18,
+    "audio_bitrate": "320k",
+    "threads": 4
+  },
+  "transitions": {
+    "default_duration": 0.85
+  },
+  "timeline": {
+    "scenes": [
+      {
+        "start": 0,
+        "duration": 10,
+        "source": "https://commons.wikimedia.org/wiki/File:Plasma-engineerguy.ogv",
+        "trim_start": 0,
+        "trim_end": 10,
+        "ken_burns": {
+          "zoom_start": 1.0,
+          "zoom_end": 1.08,
+          "pan_start_x": 0.38,
+          "pan_start_y": 0.28,
+          "pan_end_x": 0.58,
+          "pan_end_y": 0.42
+        },
+        "transition": {
+          "in": 0.0,
+          "out": 0.85
+        },
+        "overlays": [
+          {
+            "type": "text",
+            "text": "Simulation and YCCC context",
+            "start": 0.3,
+            "duration": 4.0,
+            "position": [60, 560],
+            "font_size": 42,
+            "box_color": "#0f172acc",
+            "fade_in": 0.35,
+            "fade_out": 0.45
+          },
+          {
+            "type": "text",
+            "text": "90 second OSV pitch",
+            "start": 5.8,
+            "duration": 3.2,
+            "position": [60, 620],
+            "font_size": 28,
+            "box_color": "#1d4ed8cc",
+            "fade_in": 0.25,
+            "fade_out": 0.35
+          }
+        ]
+      },
+      {
+        "start": 10,
+        "duration": 30,
+        "source": "https://commons.wikimedia.org/wiki/File:Fiber-engineerguy.ogv",
+        "trim_start": 0,
+        "trim_end": 30.85,
+        "ken_burns": {
+          "zoom_start": 1.02,
+          "zoom_end": 1.1,
+          "pan_start_x": 0.45,
+          "pan_start_y": 0.3,
+          "pan_end_x": 0.62,
+          "pan_end_y": 0.5
+        },
+        "transition": {
+          "in": 0.85,
+          "out": 0.85
+        },
+        "overlays": [
+          {
+            "type": "text",
+            "text": "World of Rogues\nFox characters • licensed IP • PG-13",
+            "start": 10.4,
+            "duration": 9.0,
+            "position": [60, 540],
+            "font_size": 40,
+            "box_color": "#111827cc",
+            "fade_in": 0.4,
+            "fade_out": 0.5
+          },
+          {
+            "type": "text",
+            "text": "Animated series with commercial franchise potential",
+            "start": 21.0,
+            "duration": 7.0,
+            "position": [60, 610],
+            "font_size": 28,
+            "box_color": "#7c2d12cc",
+            "fade_in": 0.35,
+            "fade_out": 0.4
+          }
+        ]
+      },
+      {
+        "start": 40,
+        "duration": 30,
+        "source": "https://commons.wikimedia.org/wiki/File:Plasma-engineerguy.ogv",
+        "trim_start": 0,
+        "trim_end": 30.85,
+        "ken_burns": {
+          "zoom_start": 1.0,
+          "zoom_end": 1.12,
+          "pan_start_x": 0.52,
+          "pan_start_y": 0.25,
+          "pan_end_x": 0.34,
+          "pan_end_y": 0.47
+        },
+        "transition": {
+          "in": 0.85,
+          "out": 0.85
+        },
+        "overlays": [
+          {
+            "type": "text",
+            "text": "Humanoids Now\nBipedal robots • prosthetics • human-centered motion",
+            "start": 40.5,
+            "duration": 10.0,
+            "position": [60, 540],
+            "font_size": 38,
+            "box_color": "#0f172acc",
+            "fade_in": 0.4,
+            "fade_out": 0.5
+          },
+          {
+            "type": "text",
+            "text": "A robotics bridge that extends the same creative ecosystem",
+            "start": 51.0,
+            "duration": 8.0,
+            "position": [60, 610],
+            "font_size": 28,
+            "box_color": "#14532dcc",
+            "fade_in": 0.35,
+            "fade_out": 0.4
+          }
+        ]
+      },
+      {
+        "start": 70,
+        "duration": 20,
+        "source": "https://commons.wikimedia.org/wiki/File:Fiber-engineerguy.ogv",
+        "trim_start": 0,
+        "trim_end": 20.85,
+        "ken_burns": {
+          "zoom_start": 1.0,
+          "zoom_end": 1.07,
+          "pan_start_x": 0.44,
+          "pan_start_y": 0.35,
+          "pan_end_x": 0.56,
+          "pan_end_y": 0.45
+        },
+        "transition": {
+          "in": 0.85,
+          "out": 0.0
+        },
+        "overlays": [
+          {
+            "type": "text",
+            "text": "Fellowship CTA\nBridge the creative and technical work",
+            "start": 70.4,
+            "duration": 9.5,
+            "position": [60, 540],
+            "font_size": 40,
+            "box_color": "#1f2937cc",
+            "fade_in": 0.35,
+            "fade_out": 0.45
+          },
+          {
+            "type": "text",
+            "text": "One pipeline. Two worlds. One execution path.",
+            "start": 80.0,
+            "duration": 8.0,
+            "position": [60, 610],
+            "font_size": 28,
+            "box_color": "#374151cc",
+            "fade_in": 0.3,
+            "fade_out": 0.4
+          }
+        ]
+      }
+    ]
+  },
+  "audio": {
+    "voiceover": {
+      "engine": "edge-tts",
+      "voice": "en-US-GuyNeural",
+      "rate": "+0%",
+      "volume": 1.0,
+      "fade_in": 0.05,
+      "fade_out": 0.12,
+      "segments": [
+        {
+          "start": 0,
+          "duration": 10,
+          "text": "In the Simulation and YCCC context, this project connects storytelling, technical craft, and a fellowship-ready production pipeline."
+        },
+        {
+          "start": 10,
+          "duration": 30,
+          "text": "World of Rogues is a fox-led animated series built around licensed intellectual property, a distinct visual world, and PG-13 adventure energy."
+        },
+        {
+          "start": 40,
+          "duration": 30,
+          "text": "Humanoids Now extends that same imagination into real-world robotics: bipedal systems, prosthetics, and human-centered motion design."
+        },
+        {
+          "start": 70,
+          "duration": 20,
+          "text": "The bridge is simple: one creative ecosystem, two complementary pillars, and a fellowship path that turns the vision into a durable studio workflow."
+        }
+      ]
+    },
+    "music": [
+      {
+        "source": "https://soundcloud.com/scottbuckley/aurora-cc-by?in=sound-vybrations/sets/ambient",
+        "volume": 0.24,
+        "duck_volume": 0.08,
+        "duck_under_voiceover": true
+      }
+    ]
+  },
+  "credits": [
     {
-      "source": "https://drive.google.com/file/d/1AI0F6Ol4StzGg4gQ4BP1cBKEg18DauHM/view?usp=drivesdk",
-      "trim_start": 0,
-      "trim_end": 8
+      "title": "Background music",
+      "source": "https://soundcloud.com/scottbuckley/aurora-cc-by?in=sound-vybrations/sets/ambient",
+      "license": "Creative Commons Attribution 4.0",
+      "attribution": "Aurora by Scott Buckley"
     },
     {
-      "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
-      "trim_start": 0,
-      "trim_end": 8
-    }
-  ],
-  "overlays": [
-    {
-      "type": "text",
-      "text": "Humanoids Now\nThe World of Rogues TV Show",
-      "start": 0,
-      "duration": 4,
-      "position": "bottom-right",
-      "font_size": 42,
-      "font_color": "#ffffff",
-      "box_color": "#111827cc"
+      "title": "Supplemental visuals",
+      "source": "https://commons.wikimedia.org/wiki/File:Plasma-engineerguy.ogv",
+      "license": "Wikimedia Commons free media",
+      "attribution": "Wikimedia Commons file: Plasma-engineerguy.ogv"
     },
     {
-      "type": "video",
-      "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
-      "trim_start": 0,
-      "trim_end": 4,
-      "start": 5,
-      "duration": 4,
-      "position": "center",
-      "size": [
-        480,
-        270
-      ],
-      "opacity": 0.92
+      "title": "Supplemental visuals",
+      "source": "https://commons.wikimedia.org/wiki/File:Fiber-engineerguy.ogv",
+      "license": "Wikimedia Commons free media",
+      "attribution": "Wikimedia Commons file: Fiber-engineerguy.ogv"
     }
   ]
 }
