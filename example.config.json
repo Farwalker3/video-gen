@@ -478,7 +478,8 @@
     "voiceover": {
       "engine": "edge-tts",
       "voice": "en-US-GuyNeural",
-      "rate": "+0%",
+      "rate": "-10%",
+      "pitch": "-10Hz",
       "volume": 1,
       "fade_in": 0.05,
       "fade_out": 0.12,

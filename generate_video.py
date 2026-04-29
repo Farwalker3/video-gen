@@ -40,6 +40,7 @@ DEFAULT_DUCK_VOLUME = 0.18
 DEFAULT_MUSIC_VOLUME = 0.28
 DEFAULT_TTS_ENGINE = "edge-tts"
 DEFAULT_TTS_VOICE = "en-US-GuyNeural"
+DEFAULT_TTS_PITCH = "-10Hz"
 USER_AGENT = "video-gen/1.0 (+https://github.com/Farwalker3/video-gen)"
 DOWNLOAD_TIMEOUT = 30
 
@@ -537,7 +538,7 @@ def build_overlay_clip(entry: dict[str, Any], workdir: Path) -> Any:
     raise ValueError(f"Unsupported overlay type: {overlay_type}")
 
 
-async def synthesize_speech(text: str, output_path: Path, engine: str, voice: str, lang: str, rate: str) -> Path:
+async def synthesize_speech(text: str, output_path: Path, engine: str, voice: str, lang: str, rate: str, pitch: str) -> Path:
     engine = (engine or DEFAULT_TTS_ENGINE).lower()
     if engine == "edge-tts":
         candidates = ["edge-tts", "gtts"]
@@ -552,7 +553,7 @@ async def synthesize_speech(text: str, output_path: Path, engine: str, voice: st
             if candidate == "edge-tts":
                 import edge_tts
 
-                communicate = edge_tts.Communicate(text=text, voice=voice or DEFAULT_TTS_VOICE, rate=rate or "+0%")
+                communicate = edge_tts.Communicate(text=text, voice=voice or DEFAULT_TTS_VOICE, rate=rate or "+0%", pitch=pitch or DEFAULT_TTS_PITCH)
                 await communicate.save(str(output_path))
                 return output_path
 
@@ -579,6 +580,7 @@ def build_voiceover_layers(config: dict[str, Any], workdir: Path) -> tuple[list[
     voice = voiceover_cfg.get("voice", DEFAULT_TTS_VOICE)
     lang = voiceover_cfg.get("lang", "en")
     rate = voiceover_cfg.get("rate", "+0%")
+    pitch = voiceover_cfg.get("pitch", DEFAULT_TTS_PITCH)
     volume = float(voiceover_cfg.get("volume", 1.0))
     default_fade_in = float(voiceover_cfg.get("fade_in", 0.08))
     default_fade_out = float(voiceover_cfg.get("fade_out", 0.15))
@@ -594,7 +596,7 @@ def build_voiceover_layers(config: dict[str, Any], workdir: Path) -> tuple[list[
         start = float(segment.get("start", 0) or 0)
         duration = parse_duration(segment.get("duration"))
         output = workdir / f"voiceover-{idx:02d}-{slugify(text)}.mp3"
-        await synthesize_speech(text, output, segment.get("engine", engine), segment.get("voice", voice), segment.get("lang", lang), segment.get("rate", rate))
+        await synthesize_speech(text, output, segment.get("engine", engine), segment.get("voice", voice), segment.get("lang", lang), segment.get("rate", rate), segment.get("pitch", pitch))
         audio = AudioFileClip(str(output)).volumex(float(segment.get("volume", volume)))
         if duration is not None and audio.duration > duration:
             audio = audio.subclip(0, duration)
@@ -619,7 +621,7 @@ def build_voiceover_layers(config: dict[str, Any], workdir: Path) -> tuple[list[
     text = str(voiceover_cfg.get("text", "")).strip()
     if text:
         output = workdir / f"voiceover-{slugify(text)}.mp3"
-        asyncio.run(synthesize_speech(text, output, engine, voice, lang, rate))
+        asyncio.run(synthesize_speech(text, output, engine, voice, lang, rate, pitch))
         audio = AudioFileClip(str(output)).volumex(volume)
         audio = audio.audio_fadein(default_fade_in).audio_fadeout(default_fade_out)
         start = float(voiceover_cfg.get("start", 0) or 0)
