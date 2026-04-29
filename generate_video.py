@@ -173,7 +173,8 @@ def download_source(source: str, workdir: Path) -> Path:
     except Exception:
         pass
 
-    out_path = workdir / f"{base_name}.bin"
+    suffix = Path(urllib.parse.urlparse(source).path).suffix or ".bin"
+    out_path = workdir / f"{base_name}{suffix}"
     return download_http_file(source, out_path)
 
 def normalize_position(value: Any) -> Any:
