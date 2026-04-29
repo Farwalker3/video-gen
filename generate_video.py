@@ -7,6 +7,7 @@ import math
 import os
 import re
 import tempfile
+import textwrap
 import urllib.parse
 from pathlib import Path
 from typing import Any, Iterable
@@ -248,6 +249,151 @@ def build_text_image(entry: dict[str, Any], workdir: Path) -> Path:
     return out_path
 
 
+def build_browser_window_image(entry: dict[str, Any], workdir: Path) -> Path:
+    size = entry.get("size") or [960, 560]
+    width = int(size[0])
+    height = int(size[1])
+    url = str(entry.get("url", ""))
+    title = str(entry.get("title", url or "browser window"))
+    headline = str(entry.get("headline", title))
+    subheadline = str(entry.get("subheadline", ""))
+    accent_color = entry.get("accent_color", "#3b82f6")
+    panel_color = entry.get("panel_color", "#0b1220")
+    page_color = entry.get("page_color", "#111827")
+    text_color = entry.get("text_color", "#f8fafc")
+    muted_color = entry.get("muted_color", "#cbd5e1")
+    accent_fill = ImageColor.getcolor(str(accent_color), "RGBA")
+    panel_fill = ImageColor.getcolor(str(panel_color), "RGBA")
+    page_fill = ImageColor.getcolor(str(page_color), "RGBA")
+    text_fill = ImageColor.getcolor(str(text_color), "RGBA")
+    muted_fill = ImageColor.getcolor(str(muted_color), "RGBA")
+    chips = [str(item) for item in entry.get("chips", []) or [] if str(item).strip()]
+    body_lines = [str(item) for item in entry.get("body_lines", []) or [] if str(item).strip()]
+    cards = [card for card in entry.get("cards", []) or [] if isinstance(card, dict)]
+    if not cards:
+        cards = [
+            {"title": "Signal", "body": "Public footprint"},
+            {"title": "Proof", "body": "Built and visible"},
+            {"title": "Next", "body": "Ready for the next step"},
+        ]
+
+    canvas = Image.new("RGBA", (width, height), panel_fill)
+    draw = ImageDraw.Draw(canvas)
+
+    shadow = (20, 24, width - 8, height - 8)
+    draw.rounded_rectangle(shadow, radius=28, fill=(0, 0, 0, 90))
+
+    outer = (12, 12, width - 20, height - 20)
+    draw.rounded_rectangle(outer, radius=28, fill=panel_fill, outline=accent_fill, width=3)
+
+    chrome_h = 52
+    chrome = (12, 12, width - 20, 12 + chrome_h)
+    draw.rounded_rectangle(chrome, radius=28, fill=(11, 18, 32, 255), outline=accent_fill, width=2)
+    draw.rectangle((12, 12 + chrome_h - 18, width - 20, 12 + chrome_h), fill=(11, 18, 32, 255))
+
+    for idx, color in enumerate([(248, 113, 113, 255), (245, 158, 11, 255), (34, 197, 94, 255)]):
+        cx = 40 + idx * 22
+        cy = 38
+        draw.ellipse((cx - 6, cy - 6, cx + 6, cy + 6), fill=color)
+
+    font_title = load_font(26)
+    font_url = load_font(18)
+    font_head = load_font(40)
+    font_sub = load_font(24)
+    font_body = load_font(20)
+    font_card_title = load_font(22)
+    font_card_body = load_font(17)
+    font_chip = load_font(16)
+
+    url_bbox = draw.textbbox((0, 0), url, font=font_url)
+    pill_w = min(max(url_bbox[2] - url_bbox[0] + 34, 180), width - 180)
+    pill_h = 28
+    pill_x = width - pill_w - 42
+    pill_y = 22
+    draw.rounded_rectangle((pill_x, pill_y, pill_x + pill_w, pill_y + pill_h), radius=14, fill=(15, 23, 42, 255), outline=accent_fill, width=1)
+    draw.text((pill_x + 16, pill_y + 4), url, font=font_url, fill=text_fill)
+
+    draw.text((82, 18), title, font=font_title, fill=text_fill)
+
+    inner_left = 44
+    inner_top = 84
+    inner_right = width - 44
+    inner_bottom = height - 42
+    draw.rounded_rectangle((inner_left, inner_top, inner_right, inner_bottom), radius=24, fill=page_fill)
+
+    hero_w = int((inner_right - inner_left) * 0.56)
+    hero_x = inner_left + 34
+    hero_y = inner_top + 30
+    body_x = hero_x
+    body_y = hero_y + 94
+
+    wrapped_head = textwrap.wrap(headline, width=18) or [headline]
+    y = hero_y
+    for line in wrapped_head[:3]:
+        draw.text((hero_x, y), line, font=font_head, fill=text_fill)
+        y += 46
+
+    if subheadline:
+        sub_lines = textwrap.wrap(subheadline, width=36)
+        y += 8
+        for line in sub_lines[:3]:
+            draw.text((hero_x, y), line, font=font_sub, fill=muted_fill)
+            y += 32
+
+    y = body_y
+    for line in body_lines[:4]:
+        wrapped = textwrap.wrap(line, width=38) or [line]
+        for chunk in wrapped[:2]:
+            draw.text((body_x, y), chunk, font=font_body, fill=text_fill)
+            y += 28
+        y += 6
+
+    chip_y = min(height - 166, max(y + 2, inner_top + 206))
+    chip_x = hero_x
+    for chip in chips[:4]:
+        chip_text = f"{chip}"
+        bbox = draw.textbbox((0, 0), chip_text, font=font_chip)
+        chip_w = bbox[2] - bbox[0] + 28
+        chip_h = bbox[3] - bbox[1] + 16
+        draw.rounded_rectangle((chip_x, chip_y, chip_x + chip_w, chip_y + chip_h), radius=12, fill=(15, 23, 42, 255), outline=accent_fill, width=1)
+        draw.text((chip_x + 14, chip_y + 7), chip_text, font=font_chip, fill=text_fill)
+        chip_x += chip_w + 12
+        if chip_x > inner_left + hero_w - 40:
+            chip_x = hero_x
+            chip_y += chip_h + 10
+
+    card_area_x = inner_left + hero_w + 26
+    card_area_w = inner_right - card_area_x - 26
+    card_top = inner_top + 26
+    card_gap = 14
+    card_w = card_area_w
+    card_h = 94
+
+    for idx, card in enumerate(cards[:3]):
+        top = card_top + idx * (card_h + card_gap)
+        rect = (card_area_x, top, card_area_x + card_w, top + card_h)
+        card_fill = (18, 27, 46, 255) if idx % 2 == 0 else (20, 34, 54, 255)
+        draw.rounded_rectangle(rect, radius=20, fill=card_fill, outline=accent_fill, width=1)
+        card_title = str(card.get("title", f"Card {idx + 1}"))
+        card_body = str(card.get("body", ""))
+        draw.text((card_area_x + 16, top + 14), card_title, font=font_card_title, fill=text_fill)
+        if card_body:
+            body_lines_card = textwrap.wrap(card_body, width=24) or [card_body]
+            by = top + 46
+            for line in body_lines_card[:2]:
+                draw.text((card_area_x + 16, by), line, font=font_card_body, fill=muted_fill)
+                by += 22
+
+    footer = str(entry.get("footer", ""))
+    if footer:
+        footer_bbox = draw.textbbox((0, 0), footer, font=font_card_body)
+        draw.text((inner_right - (footer_bbox[2] - footer_bbox[0]) - 24, inner_bottom - 34), footer, font=font_card_body, fill=muted_fill)
+
+    out_path = workdir / f"browser-window-{slugify(url or title)}.png"
+    canvas.save(out_path)
+    return out_path
+
+
 def fit_to_frame(clip: Any, size: tuple[int, int]) -> Any:
     target_w, target_h = size
     if clip.w == target_w and clip.h == target_h:
@@ -327,6 +473,20 @@ def build_overlay_clip(entry: dict[str, Any], workdir: Path) -> Any:
     position = normalize_position(entry.get("position", "center"))
     fade_in = float(entry.get("fade_in", entry.get("animation", {}).get("fade_in", 0) if isinstance(entry.get("animation"), dict) else 0) or 0)
     fade_out = float(entry.get("fade_out", entry.get("animation", {}).get("fade_out", 0) if isinstance(entry.get("animation"), dict) else 0) or 0)
+
+    if overlay_type == "browser_window":
+        image_path = build_browser_window_image(entry, workdir)
+        clip = ImageClip(str(image_path)).set_start(start).set_position(position)
+        clip = clip.set_duration(duration or float(entry.get("default_duration", 5)))
+        if entry.get("size"):
+            clip = clip.resize(newsize=tuple(entry["size"]))
+        if entry.get("opacity") is not None:
+            clip = clip.set_opacity(float(entry["opacity"]))
+        if fade_in:
+            clip = clip.fadein(fade_in)
+        if fade_out:
+            clip = clip.fadeout(fade_out)
+        return clip
 
     if overlay_type == "text":
         image_path = build_text_image(entry, workdir)
