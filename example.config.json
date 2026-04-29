@@ -2,7 +2,10 @@
   "schema_version": 2,
   "output": "output/osv-pitch.mp4",
   "render": {
-    "size": [1280, 720],
+    "size": [
+      1280,
+      720
+    ],
     "fps": 24
   },
   "export": {
@@ -18,12 +21,12 @@
     "scenes": [
       {
         "start": 0,
-        "duration": 10,
+        "duration": 18,
         "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
         "trim_start": 0,
-        "trim_end": 10,
+        "trim_end": 18.85,
         "ken_burns": {
-          "zoom_start": 1.0,
+          "zoom_start": 1,
           "zoom_end": 1.08,
           "pan_start_x": 0.38,
           "pan_start_y": 0.28,
@@ -31,40 +34,114 @@
           "pan_end_y": 0.42
         },
         "transition": {
-          "in": 0.0,
+          "in": 0,
           "out": 0.85
         },
         "overlays": [
           {
             "type": "text",
-            "text": "Simulation and YCCC context",
-            "start": 0.3,
-            "duration": 4.0,
-            "position": [60, 560],
-            "font_size": 42,
+            "text": "Professional super pitch\nTechnical depth + creative scale",
+            "start": 0.4,
+            "duration": 5.8,
+            "position": [
+              60,
+              60
+            ],
+            "font_size": 40,
             "box_color": "#0f172acc",
             "fade_in": 0.35,
-            "fade_out": 0.45
+            "fade_out": 0.4
           },
           {
-            "type": "text",
-            "text": "90 second OSV pitch",
-            "start": 5.8,
-            "duration": 3.2,
-            "position": [60, 620],
-            "font_size": 28,
-            "box_color": "#1d4ed8cc",
-            "fade_in": 0.25,
-            "fade_out": 0.35
+            "type": "browser_window",
+            "start": 2,
+            "duration": 14,
+            "position": [
+              50,
+              170
+            ],
+            "size": [
+              560,
+              390
+            ],
+            "url": "kodair.us",
+            "title": "Kodair",
+            "headline": "Public digital footprint",
+            "subheadline": "A visible home base for the project ecosystem",
+            "body_lines": [
+              "Kodair is the public-facing footprint that frames the work and keeps the larger story coherent.",
+              "It ties the creator identity, experimentation, and launch-ready narrative into one surface."
+            ],
+            "chips": [
+              "site",
+              "identity",
+              "launch surface"
+            ],
+            "cards": [
+              {
+                "title": "Hub",
+                "body": "A central public home for the project ecosystem"
+              },
+              {
+                "title": "Signal",
+                "body": "Shows an active and durable digital presence"
+              },
+              {
+                "title": "Context",
+                "body": "Connects technical work with a readable story"
+              }
+            ],
+            "accent_color": "#22c55e"
+          },
+          {
+            "type": "browser_window",
+            "start": 3,
+            "duration": 13,
+            "position": [
+              670,
+              170
+            ],
+            "size": [
+              560,
+              390
+            ],
+            "url": "humanoids-now.kodair.us",
+            "title": "Humanoids Now",
+            "headline": "Raccoon AI partner",
+            "subheadline": "Bipedal robotics, autonomy, and a memorable assistant character",
+            "body_lines": [
+              "The robot becomes both a technical proof point and an approachable story hook.",
+              "It is the bridge between engineering depth and a friendly product narrative."
+            ],
+            "chips": [
+              "robot",
+              "autonomy",
+              "AI partner"
+            ],
+            "cards": [
+              {
+                "title": "Motion",
+                "body": "Bipedal systems and human-centered motion"
+              },
+              {
+                "title": "Intelligence",
+                "body": "An AI partner with product-ready framing"
+              },
+              {
+                "title": "Narrative",
+                "body": "A raccoon companion that is easy to remember"
+              }
+            ],
+            "accent_color": "#f59e0b"
           }
         ]
       },
       {
-        "start": 10,
-        "duration": 30,
+        "start": 18,
+        "duration": 18,
         "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv",
         "trim_start": 0,
-        "trim_end": 30.85,
+        "trim_end": 18.85,
         "ken_burns": {
           "zoom_start": 1.02,
           "zoom_end": 1.1,
@@ -80,36 +157,70 @@
         "overlays": [
           {
             "type": "text",
-            "text": "World of Rogues\nFox characters • licensed IP • PG-13",
-            "start": 10.4,
-            "duration": 9.0,
-            "position": [60, 540],
-            "font_size": 40,
+            "text": "Rogues assets\nTV show teaser with franchise scale",
+            "start": 18.4,
+            "duration": 5.8,
+            "position": [
+              60,
+              60
+            ],
+            "font_size": 38,
             "box_color": "#111827cc",
             "fade_in": 0.4,
-            "fade_out": 0.5
+            "fade_out": 0.4
           },
           {
-            "type": "text",
-            "text": "Animated series with commercial franchise potential",
-            "start": 21.0,
-            "duration": 7.0,
-            "position": [60, 610],
-            "font_size": 28,
-            "box_color": "#7c2d12cc",
-            "fade_in": 0.35,
-            "fade_out": 0.4
+            "type": "browser_window",
+            "start": 19.2,
+            "duration": 15,
+            "position": [
+              90,
+              155
+            ],
+            "size": [
+              1100,
+              430
+            ],
+            "url": "rogues.montaigne.io",
+            "title": "World of Rogues",
+            "headline": "Rogues assets",
+            "subheadline": "A teaser surface for the animated series and the larger IP world",
+            "body_lines": [
+              "The visual language should feel like a series teaser, not just a website preview.",
+              "It needs to carry character, worldbuilding, and license-ready ambition at a glance."
+            ],
+            "chips": [
+              "teaser",
+              "IP",
+              "merch ready",
+              "worldbuilding"
+            ],
+            "cards": [
+              {
+                "title": "Show",
+                "body": "The World of Rogues TV show teaser front and center"
+              },
+              {
+                "title": "Scale",
+                "body": "Animated IP with room for licensing and partnerships"
+              },
+              {
+                "title": "Energy",
+                "body": "Fox characters, attitude, and a clean pitch surface"
+              }
+            ],
+            "accent_color": "#ef4444"
           }
         ]
       },
       {
-        "start": 40,
-        "duration": 30,
+        "start": 36,
+        "duration": 18,
         "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
         "trim_start": 0,
-        "trim_end": 30.85,
+        "trim_end": 18.85,
         "ken_burns": {
-          "zoom_start": 1.0,
+          "zoom_start": 1,
           "zoom_end": 1.12,
           "pan_start_x": 0.52,
           "pan_start_y": 0.25,
@@ -123,36 +234,175 @@
         "overlays": [
           {
             "type": "text",
-            "text": "Humanoids Now\nBipedal robots • prosthetics • human-centered motion",
-            "start": 40.5,
-            "duration": 10.0,
-            "position": [60, 540],
-            "font_size": 38,
-            "box_color": "#0f172acc",
-            "fade_in": 0.4,
-            "fade_out": 0.5
+            "text": "Momentum",
+            "start": 36.3,
+            "duration": 5,
+            "position": [
+              60,
+              60
+            ],
+            "font_size": 42,
+            "box_color": "#1f2937cc",
+            "fade_in": 0.35,
+            "fade_out": 0.4
           },
           {
             "type": "text",
-            "text": "A robotics bridge that extends the same creative ecosystem",
-            "start": 51.0,
-            "duration": 8.0,
-            "position": [60, 610],
-            "font_size": 28,
-            "box_color": "#14532dcc",
-            "fade_in": 0.35,
-            "fade_out": 0.4
+            "text": "My name is John C Barr and I am the creator of World of Rogues",
+            "start": 37.1,
+            "duration": 4.2,
+            "position": [
+              70,
+              160
+            ],
+            "font_size": 24,
+            "box_color": "#0f172acc",
+            "fade_in": 0.25,
+            "fade_out": 0.25
+          },
+          {
+            "type": "text",
+            "text": "Could you please let me know what the next steps would be",
+            "start": 40.1,
+            "duration": 4.2,
+            "position": [
+              120,
+              235
+            ],
+            "font_size": 24,
+            "box_color": "#1e293bcc",
+            "fade_in": 0.25,
+            "fade_out": 0.25
+          },
+          {
+            "type": "text",
+            "text": "minimum order quantities • design process • timelines",
+            "start": 43.1,
+            "duration": 4.2,
+            "position": [
+              190,
+              310
+            ],
+            "font_size": 24,
+            "box_color": "#312e81cc",
+            "fade_in": 0.25,
+            "fade_out": 0.25
+          },
+          {
+            "type": "text",
+            "text": "I would be grateful for any guidance on the right contact",
+            "start": 46.1,
+            "duration": 4.2,
+            "position": [
+              260,
+              385
+            ],
+            "font_size": 24,
+            "box_color": "#78350fcc",
+            "fade_in": 0.25,
+            "fade_out": 0.25
           }
         ]
       },
       {
-        "start": 70,
-        "duration": 20,
+        "start": 54,
+        "duration": 18,
         "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv",
         "trim_start": 0,
-        "trim_end": 20.85,
+        "trim_end": 18.85,
         "ken_burns": {
-          "zoom_start": 1.0,
+          "zoom_start": 1,
+          "zoom_end": 1.08,
+          "pan_start_x": 0.44,
+          "pan_start_y": 0.35,
+          "pan_end_x": 0.56,
+          "pan_end_y": 0.45
+        },
+        "transition": {
+          "in": 0.85,
+          "out": 0.85
+        },
+        "overlays": [
+          {
+            "type": "text",
+            "text": "Core pillars",
+            "start": 54.3,
+            "duration": 4.5,
+            "position": [
+              60,
+              60
+            ],
+            "font_size": 42,
+            "box_color": "#0f172acc",
+            "fade_in": 0.35,
+            "fade_out": 0.4
+          },
+          {
+            "type": "text",
+            "text": "Raccoon AI partner",
+            "start": 55,
+            "duration": 5,
+            "position": [
+              60,
+              155
+            ],
+            "font_size": 36,
+            "box_color": "#1f2937cc",
+            "fade_in": 0.3,
+            "fade_out": 0.35
+          },
+          {
+            "type": "text",
+            "text": "Humanoids Now robot",
+            "start": 55.8,
+            "duration": 5,
+            "position": [
+              80,
+              230
+            ],
+            "font_size": 32,
+            "box_color": "#14532dcc",
+            "fade_in": 0.3,
+            "fade_out": 0.35
+          },
+          {
+            "type": "text",
+            "text": "The World of Rogues TV show teaser",
+            "start": 56.6,
+            "duration": 5,
+            "position": [
+              100,
+              305
+            ],
+            "font_size": 32,
+            "box_color": "#7f1d1dcc",
+            "fade_in": 0.3,
+            "fade_out": 0.35
+          },
+          {
+            "type": "text",
+            "text": "Two worlds one execution path",
+            "start": 63,
+            "duration": 5.5,
+            "position": [
+              60,
+              390
+            ],
+            "font_size": 28,
+            "box_color": "#334155cc",
+            "fade_in": 0.25,
+            "fade_out": 0.3
+          }
+        ]
+      },
+      {
+        "start": 72,
+        "duration": 18,
+        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
+        "trim_start": 0,
+        "trim_end": 18.85,
+        "ken_burns": {
+          "zoom_start": 1,
           "zoom_end": 1.07,
           "pan_start_x": 0.44,
           "pan_start_y": 0.35,
@@ -161,30 +411,64 @@
         },
         "transition": {
           "in": 0.85,
-          "out": 0.0
+          "out": 0
         },
         "overlays": [
           {
             "type": "text",
-            "text": "Fellowship CTA\nBridge the creative and technical work",
-            "start": 70.4,
-            "duration": 9.5,
-            "position": [60, 540],
-            "font_size": 40,
+            "text": "One cohesive super pitch",
+            "start": 72.3,
+            "duration": 5,
+            "position": [
+              60,
+              70
+            ],
+            "font_size": 42,
             "box_color": "#1f2937cc",
             "fade_in": 0.35,
-            "fade_out": 0.45
+            "fade_out": 0.35
           },
           {
             "type": "text",
-            "text": "One pipeline. Two worlds. One execution path.",
-            "start": 80.0,
-            "duration": 8.0,
-            "position": [60, 610],
+            "text": "Kodair Humanoids Now and World of Rogues",
+            "start": 77.8,
+            "duration": 5.5,
+            "position": [
+              60,
+              160
+            ],
+            "font_size": 32,
+            "box_color": "#0f172acc",
+            "fade_in": 0.25,
+            "fade_out": 0.3
+          },
+          {
+            "type": "text",
+            "text": "Technical depth • creative scale • real momentum",
+            "start": 81.6,
+            "duration": 5.8,
+            "position": [
+              60,
+              245
+            ],
+            "font_size": 30,
+            "box_color": "#0f172acc",
+            "fade_in": 0.25,
+            "fade_out": 0.3
+          },
+          {
+            "type": "text",
+            "text": "A 90 second narrative that feels ready for production",
+            "start": 84.6,
+            "duration": 4.6,
+            "position": [
+              60,
+              330
+            ],
             "font_size": 28,
-            "box_color": "#374151cc",
-            "fade_in": 0.3,
-            "fade_out": 0.4
+            "box_color": "#14532dcc",
+            "fade_in": 0.25,
+            "fade_out": 0.3
           }
         ]
       }
@@ -195,40 +479,37 @@
       "engine": "edge-tts",
       "voice": "en-US-GuyNeural",
       "rate": "+0%",
-      "volume": 1.0,
+      "volume": 1,
       "fade_in": 0.05,
       "fade_out": 0.12,
       "segments": [
         {
           "start": 0,
-          "duration": 10,
-          "text": "In the Simulation and YCCC context, this project connects storytelling, technical craft, and a fellowship-ready production pipeline."
+          "duration": 18,
+          "text": "Here is the super pitch: one creator, three live surfaces, and a single story that connects technical depth with creative scale."
         },
         {
-          "start": 10,
-          "duration": 30,
-          "text": "World of Rogues is a fox-led animated series built around licensed intellectual property, a distinct visual world, and PG-13 adventure energy."
+          "start": 18,
+          "duration": 18,
+          "text": "Kodair and Humanoids Now show the digital footprint of the work, with a public hub, a raccoon AI partner, and a robotics direction that feels concrete."
         },
         {
-          "start": 40,
-          "duration": 30,
-          "text": "Humanoids Now extends that same imagination into real-world robotics: bipedal systems, prosthetics, and human-centered motion design."
+          "start": 36,
+          "duration": 18,
+          "text": "The World of Rogues teaser brings the creative side into view with show assets, character worldbuilding, and franchise scale."
         },
         {
-          "start": 70,
-          "duration": 20,
-          "text": "The bridge is simple: one creative ecosystem, two complementary pillars, and a fellowship path that turns the vision into a durable studio workflow."
+          "start": 54,
+          "duration": 18,
+          "text": "The momentum is real too: the outreach threads show active engagement, careful follow up, and a steady push toward the right industry partners."
+        },
+        {
+          "start": 72,
+          "duration": 18,
+          "text": "Put together, it becomes one cohesive ninety second pitch that connects engineering, intellectual property, and a path to production."
         }
       ]
-    },
-    "music": [
-      {
-        "source": "https://soundcloud.com/scottbuckley/aurora-cc-by?in=sound-vybrations/sets/ambient",
-        "volume": 0.24,
-        "duck_volume": 0.08,
-        "duck_under_voiceover": true
-      }
-    ]
+    }
   },
   "credits": [
     {
