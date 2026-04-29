@@ -3,6 +3,8 @@ name: Generate video
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - "generate_video.py"
       - "example.config.json"
