@@ -797,6 +797,7 @@ def main() -> None:
             str(output_path),
             fps=fps,
             codec="libx264",
+            audio=True,
             audio_codec="aac",
             preset=export.get("preset", "slow"),
             threads=int(export.get("threads", max(2, (os.cpu_count() or 4) - 1))),

@@ -40,14 +40,14 @@
         "overlays": [
           {
             "type": "text",
-            "text": "NO STOCK FOOTAGE\nJUST THE DRIVE ASSETS",
+            "text": "John C. Barr",
             "start": 0.2,
             "duration": 5.2,
             "position": [
               250,
               80
             ],
-            "font_size": 54,
+            "font_size": 56,
             "box_color": "#050505cc",
             "font_color": "#ffffff",
             "padding": 28,
@@ -57,7 +57,7 @@
           },
           {
             "type": "text",
-            "text": "RACCOON ROBOT",
+            "text": "Simulation/Tech Specialist at YCCC",
             "start": 5,
             "duration": 4.6,
             "position": [
@@ -71,48 +71,6 @@
             "radius": 22,
             "fade_in": 0.22,
             "fade_out": 0.28
-          },
-          {
-            "type": "browser_window",
-            "start": 7,
-            "duration": 7,
-            "position": [
-              690,
-              330
-            ],
-            "size": [
-              510,
-              300
-            ],
-            "url": "drive.google.com",
-            "title": "Source check",
-            "headline": "Raccoon robot asset",
-            "subheadline": "Exclusive visual source",
-            "body_lines": [
-              "The timeline uses only the provided Drive video.",
-              "No stock footage and no filler shots."
-            ],
-            "chips": [
-              "drive",
-              "verified",
-              "cinematic"
-            ],
-            "cards": [
-              {
-                "title": "Source",
-                "body": "Drive link provided by the user"
-              },
-              {
-                "title": "Motion",
-                "body": "Ken Burns push for trailer energy"
-              },
-              {
-                "title": "Rule",
-                "body": "No stock footage anywhere in the cut"
-              }
-            ],
-            "accent_color": "#f97316",
-            "opacity": 0.97
           }
         ]
       },
@@ -137,7 +95,7 @@
         "overlays": [
           {
             "type": "text",
-            "text": "WORLD OF ROGUES",
+            "text": "World of Rogues TV Show",
             "start": 15.2,
             "duration": 5,
             "position": [
@@ -154,7 +112,7 @@
           },
           {
             "type": "text",
-            "text": "TRAILER ENERGY\nNOT A SLIDE DECK",
+            "text": "Reimagined animated series\nlicensed IP",
             "start": 19.8,
             "duration": 4.8,
             "position": [
@@ -168,48 +126,6 @@
             "radius": 22,
             "fade_in": 0.22,
             "fade_out": 0.28
-          },
-          {
-            "type": "browser_window",
-            "start": 16.8,
-            "duration": 7,
-            "position": [
-              60,
-              340
-            ],
-            "size": [
-              520,
-              300
-            ],
-            "url": "inbox",
-            "title": "Email update",
-            "headline": "Browser and email visuals stay in the cut",
-            "subheadline": "Updates are part of the rhythm",
-            "body_lines": [
-              "Inbox style panels keep the story moving.",
-              "The footage stays clean and cinematic."
-            ],
-            "chips": [
-              "updates",
-              "inbox",
-              "motion"
-            ],
-            "cards": [
-              {
-                "title": "Update",
-                "body": "Keep the browser style visualization alive"
-              },
-              {
-                "title": "Look",
-                "body": "No plain slide deck treatment"
-              },
-              {
-                "title": "Energy",
-                "body": "Faster cuts and harder transitions"
-              }
-            ],
-            "accent_color": "#ef4444",
-            "opacity": 0.97
           }
         ]
       },
@@ -234,7 +150,7 @@
         "overlays": [
           {
             "type": "text",
-            "text": "TRAILER VOICE",
+            "text": "Humanoids Now",
             "start": 30.2,
             "duration": 4.5,
             "position": [
@@ -251,7 +167,7 @@
           },
           {
             "type": "text",
-            "text": "en-US-GuyNeural\nrate minus ten\npitch minus ten",
+            "text": "Bipedal autonomous robots\nand prosthetics",
             "start": 34.3,
             "duration": 5.5,
             "position": [
@@ -289,7 +205,7 @@
         "overlays": [
           {
             "type": "text",
-            "text": "BOLD CENTERED TITLES",
+            "text": "OSV Fellowship",
             "start": 45.2,
             "duration": 4.8,
             "position": [
@@ -306,7 +222,7 @@
           },
           {
             "type": "text",
-            "text": "HIGH CONTRAST\nDIRECTLY ON THE VIDEO",
+            "text": "Support the next stage",
             "start": 49.5,
             "duration": 5,
             "position": [
@@ -320,48 +236,6 @@
             "radius": 22,
             "fade_in": 0.22,
             "fade_out": 0.28
-          },
-          {
-            "type": "browser_window",
-            "start": 52,
-            "duration": 7,
-            "position": [
-              700,
-              340
-            ],
-            "size": [
-              500,
-              280
-            ],
-            "url": "render",
-            "title": "Status update",
-            "headline": "No slide deck look",
-            "subheadline": "Cinematic titles only",
-            "body_lines": [
-              "Titles sit on the footage, not on plain slides.",
-              "The cut keeps moving with the voiceover."
-            ],
-            "chips": [
-              "titles",
-              "motion",
-              "render"
-            ],
-            "cards": [
-              {
-                "title": "Look",
-                "body": "Centered high contrast overlays"
-              },
-              {
-                "title": "Pacing",
-                "body": "Fast and cinematic"
-              },
-              {
-                "title": "Rule",
-                "body": "No stock, no slide deck"
-              }
-            ],
-            "accent_color": "#22c55e",
-            "opacity": 0.97
           }
         ]
       },
@@ -386,7 +260,7 @@
         "overlays": [
           {
             "type": "text",
-            "text": "FASTER CUTS",
+            "text": "World of Rogues",
             "start": 60.3,
             "duration": 4,
             "position": [
@@ -403,7 +277,7 @@
           },
           {
             "type": "text",
-            "text": "KEN BURNS\nHARD TRANSITIONS",
+            "text": "Reimagined animated series\nlicensed IP",
             "start": 64,
             "duration": 5.2,
             "position": [
@@ -417,48 +291,6 @@
             "radius": 22,
             "fade_in": 0.22,
             "fade_out": 0.28
-          },
-          {
-            "type": "browser_window",
-            "start": 67,
-            "duration": 7,
-            "position": [
-              60,
-              350
-            ],
-            "size": [
-              520,
-              280
-            ],
-            "url": "email",
-            "title": "Inbox visualization",
-            "headline": "Updates stay present",
-            "subheadline": "But the visuals stay exclusive",
-            "body_lines": [
-              "No stock footage was used.",
-              "Only the two Drive clips drive the timeline."
-            ],
-            "chips": [
-              "email",
-              "updates",
-              "verified"
-            ],
-            "cards": [
-              {
-                "title": "Source",
-                "body": "Only the two user provided Drive links"
-              },
-              {
-                "title": "Motion",
-                "body": "Trailers style pacing"
-              },
-              {
-                "title": "Result",
-                "body": "Clean and cinematic"
-              }
-            ],
-            "accent_color": "#38bdf8",
-            "opacity": 0.97
           }
         ]
       },
@@ -483,7 +315,7 @@
         "overlays": [
           {
             "type": "text",
-            "text": "ONE CREATOR",
+            "text": "Humanoids Now",
             "start": 75.2,
             "duration": 4.3,
             "position": [
@@ -500,7 +332,7 @@
           },
           {
             "type": "text",
-            "text": "TWO ASSETS\nONE BIGGER STORY",
+            "text": "OSV Fellowship",
             "start": 79.3,
             "duration": 5.2,
             "position": [
@@ -514,65 +346,6 @@
             "radius": 22,
             "fade_in": 0.22,
             "fade_out": 0.28
-          },
-          {
-            "type": "text",
-            "text": "CUT TO BLACK",
-            "start": 84.8,
-            "duration": 3,
-            "position": [
-              410,
-              330
-            ],
-            "font_size": 48,
-            "box_color": "#030712cc",
-            "font_color": "#ffffff",
-            "padding": 22,
-            "radius": 20,
-            "fade_in": 0.18,
-            "fade_out": 0.25
-          },
-          {
-            "type": "browser_window",
-            "start": 83,
-            "duration": 7,
-            "position": [
-              650,
-              330
-            ],
-            "size": [
-              560,
-              310
-            ],
-            "url": "main",
-            "title": "Final update",
-            "headline": "Render committed to main",
-            "subheadline": "The pitch is locked",
-            "body_lines": [
-              "Final render uses only the two Drive sources.",
-              "Classic trailer voice and cinematic titles remain intact."
-            ],
-            "chips": [
-              "main",
-              "locked",
-              "final"
-            ],
-            "cards": [
-              {
-                "title": "Commit",
-                "body": "Pushed to main to trigger render"
-              },
-              {
-                "title": "Audio",
-                "body": "en-US-GuyNeural with dark trailer tone"
-              },
-              {
-                "title": "Visuals",
-                "body": "Raccoon robot plus World of Rogues"
-              }
-            ],
-            "accent_color": "#f59e0b",
-            "opacity": 0.97
           }
         ]
       }
@@ -591,32 +364,32 @@
         {
           "start": 0,
           "duration": 15,
-          "text": "No stock footage. Just two real Drive assets, cut like a movie trailer."
+          "text": "John C. Barr, Simulation and Tech Specialist at YCCC."
         },
         {
           "start": 15,
           "duration": 15,
-          "text": "The Raccoon Robot and World of Rogues teaser carry the whole visual story."
+          "text": "World of Rogues TV Show. A reimagined animated series and licensed IP."
         },
         {
           "start": 30,
           "duration": 15,
-          "text": "The browser style updates stay in the edit, but the frames stay clean."
+          "text": "Humanoids Now. Bipedal autonomous robots and prosthetics."
         },
         {
           "start": 45,
           "duration": 15,
-          "text": "Bold centered titles land directly on the footage instead of slide deck panels."
+          "text": "OSV Fellowship."
         },
         {
           "start": 60,
           "duration": 15,
-          "text": "Ken Burns motion and hard cuts push the pacing forward."
+          "text": "World of Rogues TV Show. Reimagined animated series. Licensed IP."
         },
         {
           "start": 75,
           "duration": 15,
-          "text": "One creator, two assets, one bigger pitch, and the render is locked."
+          "text": "Humanoids Now. Bipedal autonomous robots and prosthetics. OSV Fellowship."
         }
       ]
     }
