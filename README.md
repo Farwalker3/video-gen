@@ -1,61 +1,40 @@
 # video-gen
 
-Python/MoviePy boilerplate for stitching existing clips, adding overlays, and exporting a finished MP4.
+A lightweight Python/MoviePy workflow for assembling pitch-ready short-form videos from existing assets.
 
-This starter is aimed at short-form pitch and teaser videos for The World of Rogues TV Show, with placeholder branding support for Humanoids Now overlays.
+Designed for the World of Rogues and OSV Fellowship context, this repository provides a straightforward path from source clips to a polished MP4 with overlays and branded presentation elements.
 
-What it can do:
-- Load existing video clips from local files or remote sources
-- Pull clips from YouTube and Google Drive URLs
-- Stitch multiple clips together into one timeline
+## What it does
+
+- Load clips from local files or Google Drive
+- Stitch multiple clips into a single timeline
 - Add overlays:
   - text
   - images
   - secondary video layers
-- Export a final MP4 with H.264 video and AAC audio
+- Support placeholder Humanoids Now branding elements
+- Render a final MP4 through GitHub Actions and download it as a workflow artifact
 
-Example asset sources included in the sample config:
-- raccoon robot footage: https://youtu.be/RoFu0ROP6oU
-- The World of Rogues teaser: https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk
+## How it works
 
-Quick start:
-1. Install dependencies with python -m pip install -r requirements.txt
-2. Render the sample video with python generate_video.py --config example.config.json --output output/generated-video.mp4
-3. Upload the finished MP4 as a workflow artifact with the included GitHub Action
+1. Define sources, trims, and overlays in `example.config.json`
+2. Render locally with `generate_video.py`
+3. Run the GitHub Actions workflow to build `output/generated-video.mp4` and retrieve the `generated-video` artifact
 
-Config format:
-- clip_sources: ordered list of clip inputs
-- overlays: optional overlay layer definitions
-- render: optional size and fps settings
+## Quick start
 
-Clip source example:
-{
-  "source": "https://youtu.be/RoFu0ROP6oU",
-  "trim_start": 0,
-  "trim_end": 8
-}
+1. Install dependencies with `python -m pip install -r requirements.txt`
+2. Render the sample video with `python generate_video.py --config example.config.json --output output/generated-video.mp4`
+3. Use the GitHub Actions workflow to produce the downloadable artifact
 
-Text overlay example:
-{
-  "type": "text",
-  "text": "Humanoids Now",
-  "start": 0,
-  "duration": 4,
-  "position": "bottom-right"
-}
+## Config format
 
-Secondary video overlay example:
-{
-  "type": "video",
-  "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
-  "start": 5,
-  "duration": 6,
-  "position": "center",
-  "size": [480, 270],
-  "opacity": 0.9
-}
+- `clip_sources`: ordered list of clip inputs
+- `overlays`: optional overlay layer definitions
+- `render`: optional size and fps settings
 
-Notes:
-- The workflow installs ffmpeg because MoviePy depends on it.
-- Remote downloads use yt-dlp for YouTube and gdown for Google Drive.
-- For pitch work, the repo is set up so you can replace the sample sources with your own clips and overlay text.
+## Notes
+
+- The workflow installs ffmpeg because MoviePy depends on it
+- Remote clips are loaded from Google Drive using gdown
+- Pillow is pinned below version 10 for compatibility with the current image handling stack
