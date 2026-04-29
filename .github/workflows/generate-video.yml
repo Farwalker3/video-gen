@@ -1,0 +1,63 @@
+name: Generate video
+
+on:
+  workflow_dispatch:
+    inputs:
+      sources_file:
+        description: Optional path to a sources file
+        required: false
+        default: assets/sources.txt
+      overlay_image:
+        description: Optional local image overlay path
+        required: false
+        default: ''
+      overlay_video:
+        description: Optional secondary video overlay path or URL
+        required: false
+        default: ''
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Render video
+        run: |
+          mkdir -p output
+          SOURCES_FILE="${{ github.event.inputs.sources_file }}"
+          OVERLAY_IMAGE="${{ github.event.inputs.overlay_image }}"
+          OVERLAY_VIDEO="${{ github.event.inputs.overlay_video }}"
+
+          ARGS=(--sources-file "$SOURCES_FILE" --output output/final.mp4)
+          if [ -n "$OVERLAY_IMAGE" ]; then
+            ARGS+=(--overlay-image "$OVERLAY_IMAGE")
+          fi
+          if [ -n "$OVERLAY_VIDEO" ]; then
+            ARGS+=(--overlay-video "$OVERLAY_VIDEO")
+          fi
+
+          python generate_video.py "${ARGS[@]}"
+
+      - name: Upload MP4 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-video
+          path: output/final.mp4
+          if-no-files-found: error
