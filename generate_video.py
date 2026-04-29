@@ -8,10 +8,10 @@ import os
 import re
 import tempfile
 import urllib.parse
-import urllib.request
 from pathlib import Path
 from typing import Any, Iterable
 
+import requests
 import numpy as np
 from PIL import Image, ImageColor, ImageDraw, ImageFont
 from moviepy.editor import (
@@ -39,6 +39,8 @@ DEFAULT_DUCK_VOLUME = 0.18
 DEFAULT_MUSIC_VOLUME = 0.28
 DEFAULT_TTS_ENGINE = "edge-tts"
 DEFAULT_TTS_VOICE = "en-US-GuyNeural"
+USER_AGENT = "video-gen/1.0 (+https://github.com/Farwalker3/video-gen)"
+DOWNLOAD_TIMEOUT = 30
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -81,6 +83,30 @@ def ensure_dir(path: Path) -> Path:
     return path
 
 
+def download_http_file(
+    url: str,
+    out_path: Path,
+    *,
+    headers: dict[str, str] | None = None,
+    timeout: int = DOWNLOAD_TIMEOUT,
+) -> Path:
+    request_headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    if headers:
+        request_headers.update(headers)
+
+    with requests.get(url, stream=True, headers=request_headers, timeout=timeout, allow_redirects=True) as response:
+        response.raise_for_status()
+        with out_path.open("wb") as fh:
+            for chunk in response.iter_content(chunk_size=1024 * 128):
+                if chunk:
+                    fh.write(chunk)
+    return out_path
+
+
 def download_source(source: str, workdir: Path) -> Path:
     candidate = Path(source)
     if candidate.exists():
@@ -97,8 +123,11 @@ def download_source(source: str, workdir: Path) -> Path:
         direct_url = f"https://commons.wikimedia.org/wiki/Special:FilePath/{urllib.parse.quote(filename)}"
         out_path = workdir / f"{base_name}{Path(filename).suffix or '.bin'}"
         try:
-            urllib.request.urlretrieve(direct_url, out_path)
-            return out_path
+            return download_http_file(
+                direct_url,
+                out_path,
+                headers={"Referer": "https://commons.wikimedia.org/"},
+            )
         except Exception:
             pass
 
@@ -124,6 +153,10 @@ def download_source(source: str, workdir: Path) -> Path:
             "merge_output_format": "mp4",
             "quiet": True,
             "no_warnings": True,
+            "http_headers": {
+                "User-Agent": USER_AGENT,
+                "Accept-Language": "en-US,en;q=0.9",
+            },
         }
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(source, download=True)
@@ -141,9 +174,7 @@ def download_source(source: str, workdir: Path) -> Path:
         pass
 
     out_path = workdir / f"{base_name}.bin"
-    urllib.request.urlretrieve(source, out_path)
-    return out_path
-
+    return download_http_file(source, out_path)
 
 def normalize_position(value: Any) -> Any:
     if isinstance(value, list) and len(value) == 2:
@@ -348,17 +379,34 @@ def build_overlay_clip(entry: dict[str, Any], workdir: Path) -> Any:
 async def synthesize_speech(text: str, output_path: Path, engine: str, voice: str, lang: str, rate: str) -> Path:
     engine = (engine or DEFAULT_TTS_ENGINE).lower()
     if engine == "edge-tts":
-        import edge_tts
+        candidates = ["edge-tts", "gtts"]
+    elif engine == "gtts":
+        candidates = ["gtts", "edge-tts"]
+    else:
+        candidates = [engine, "edge-tts", "gtts"]
 
-        communicate = edge_tts.Communicate(text=text, voice=voice or DEFAULT_TTS_VOICE, rate=rate or "+0%")
-        await communicate.save(str(output_path))
-        return output_path
+    errors: list[str] = []
+    for candidate in candidates:
+        try:
+            if candidate == "edge-tts":
+                import edge_tts
 
-    from gtts import gTTS
+                communicate = edge_tts.Communicate(text=text, voice=voice or DEFAULT_TTS_VOICE, rate=rate or "+0%")
+                await communicate.save(str(output_path))
+                return output_path
 
-    tts = gTTS(text=text, lang=lang or "en", slow=False)
-    tts.save(str(output_path))
-    return output_path
+            if candidate == "gtts":
+                from gtts import gTTS
+
+                tts = gTTS(text=text, lang=lang or "en", slow=False)
+                tts.save(str(output_path))
+                return output_path
+
+            errors.append(f"unsupported TTS engine: {candidate}")
+        except Exception as exc:
+            errors.append(f"{candidate}: {exc}")
+
+    raise RuntimeError(f"All TTS providers failed: {'; '.join(errors)}")
 
 
 def build_voiceover_layers(config: dict[str, Any], workdir: Path) -> tuple[list[Any], list[tuple[float, float]]]:

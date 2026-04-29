@@ -2,5 +2,5 @@
 # Background music reference used by the sample pitch config:
 https://soundcloud.com/scottbuckley/aurora-cc-by?in=sound-vybrations/sets/ambient
 # Supplemental visual references used by the sample pitch config:
-https://commons.wikimedia.org/wiki/File:Plasma-engineerguy.ogv
-https://commons.wikimedia.org/wiki/File:Fiber-engineerguy.ogv
+https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv
+https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv

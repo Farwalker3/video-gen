@@ -19,7 +19,7 @@
       {
         "start": 0,
         "duration": 10,
-        "source": "https://commons.wikimedia.org/wiki/File:Plasma-engineerguy.ogv",
+        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
         "trim_start": 0,
         "trim_end": 10,
         "ken_burns": {
@@ -62,7 +62,7 @@
       {
         "start": 10,
         "duration": 30,
-        "source": "https://commons.wikimedia.org/wiki/File:Fiber-engineerguy.ogv",
+        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv",
         "trim_start": 0,
         "trim_end": 30.85,
         "ken_burns": {
@@ -105,7 +105,7 @@
       {
         "start": 40,
         "duration": 30,
-        "source": "https://commons.wikimedia.org/wiki/File:Plasma-engineerguy.ogv",
+        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
         "trim_start": 0,
         "trim_end": 30.85,
         "ken_burns": {
@@ -148,7 +148,7 @@
       {
         "start": 70,
         "duration": 20,
-        "source": "https://commons.wikimedia.org/wiki/File:Fiber-engineerguy.ogv",
+        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv",
         "trim_start": 0,
         "trim_end": 20.85,
         "ken_burns": {
@@ -239,13 +239,13 @@
     },
     {
       "title": "Supplemental visuals",
-      "source": "https://commons.wikimedia.org/wiki/File:Plasma-engineerguy.ogv",
+      "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
       "license": "Wikimedia Commons free media",
       "attribution": "Wikimedia Commons file: Plasma-engineerguy.ogv"
     },
     {
       "title": "Supplemental visuals",
-      "source": "https://commons.wikimedia.org/wiki/File:Fiber-engineerguy.ogv",
+      "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv",
       "license": "Wikimedia Commons free media",
       "attribution": "Wikimedia Commons file: Fiber-engineerguy.ogv"
     }
