@@ -1,12 +1,15 @@
 {
   "output": "output/generated-video.mp4",
   "render": {
-    "size": [1280, 720],
+    "size": [
+      1280,
+      720
+    ],
     "fps": 24
   },
   "clip_sources": [
     {
-      "source": "https://youtu.be/RoFu0ROP6oU",
+      "source": "https://drive.google.com/file/d/1AI0F6Ol4StzGg4gQ4BP1cBKEg18DauHM/view?usp=drivesdk",
       "trim_start": 0,
       "trim_end": 8
     },
@@ -35,7 +38,10 @@
       "start": 5,
       "duration": 4,
       "position": "center",
-      "size": [480, 270],
+      "size": [
+        480,
+        270
+      ],
       "opacity": 0.92
     }
   ]

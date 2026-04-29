@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import tempfile
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -37,7 +39,21 @@ def is_youtube_url(value: str) -> bool:
 
 def is_gdrive_url(value: str) -> bool:
     lower = value.lower()
-    return "drive.google.com" in lower
+    return "drive.google.com" in lower or "docs.google.com" in lower
+
+
+def normalize_gdrive_url(source: str) -> str:
+    match = re.search(r"/file/d/([^/]+)", source)
+    if match:
+        return f"https://drive.google.com/uc?id={match.group(1)}"
+
+    parsed = urllib.parse.urlparse(source)
+    query = urllib.parse.parse_qs(parsed.query)
+    file_id = query.get("id", [None])[0]
+    if file_id:
+        return f"https://drive.google.com/uc?id={file_id}"
+
+    return source
 
 
 def slugify(value: str) -> str:
@@ -84,8 +100,9 @@ def download_source(source: str, workdir: Path) -> Path:
     if is_gdrive_url(source):
         import gdown
 
+        normalized_source = normalize_gdrive_url(source)
         out_path = workdir / f"{base_name}.mp4"
-        downloaded = gdown.download(url=source, output=str(out_path), quiet=True, fuzzy=True)
+        downloaded = gdown.download(url=normalized_source, output=str(out_path), quiet=True, fuzzy=True)
         if downloaded:
             return Path(downloaded)
         raise RuntimeError(f"Google Drive download failed for {source}")
