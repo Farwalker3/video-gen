@@ -1,0 +1,42 @@
+{
+  "output": "output/generated-video.mp4",
+  "render": {
+    "size": [1280, 720],
+    "fps": 24
+  },
+  "clip_sources": [
+    {
+      "source": "https://youtu.be/RoFu0ROP6oU",
+      "trim_start": 0,
+      "trim_end": 8
+    },
+    {
+      "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
+      "trim_start": 0,
+      "trim_end": 8
+    }
+  ],
+  "overlays": [
+    {
+      "type": "text",
+      "text": "Humanoids Now\nThe World of Rogues TV Show",
+      "start": 0,
+      "duration": 4,
+      "position": "bottom-right",
+      "font_size": 42,
+      "font_color": "#ffffff",
+      "box_color": "#111827cc"
+    },
+    {
+      "type": "video",
+      "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
+      "trim_start": 0,
+      "trim_end": 4,
+      "start": 5,
+      "duration": 4,
+      "position": "center",
+      "size": [480, 270],
+      "opacity": 0.92
+    }
+  ]
+}

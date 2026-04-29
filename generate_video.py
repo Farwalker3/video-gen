@@ -2,224 +2,265 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
+import tempfile
+import urllib.request
 from pathlib import Path
-from typing import Iterable, List, Optional
+from typing import Any
 
-from moviepy.editor import ColorClip, CompositeVideoClip, ImageClip, VideoFileClip, concatenate_videoclips
-from PIL import Image, ImageDraw, ImageFont
-from yt_dlp import YoutubeDL
-
-ROOT = Path(__file__).resolve().parent
-DEFAULT_OUTPUT = ROOT / 'output' / 'final.mp4'
-DEFAULT_SOURCES_FILE = ROOT / 'assets' / 'sources.txt'
-DOWNLOAD_DIR = ROOT / 'downloads'
-TEMP_DIR = ROOT / 'output' / '_temp'
+from PIL import Image, ImageColor, ImageDraw, ImageFont
+from moviepy.editor import CompositeVideoClip, ImageClip, VideoFileClip, concatenate_videoclips
 
 
-def ensure_dir(path: Path) -> None:
-    path.mkdir(parents=True, exist_ok=True)
+POSITION_MAP = {
+    "top-left": ("left", "top"),
+    "top-right": ("right", "top"),
+    "bottom-left": ("left", "bottom"),
+    "bottom-right": ("right", "bottom"),
+    "center": ("center", "center"),
+}
 
 
-def is_url(source: str) -> bool:
-    return source.startswith('http://') or source.startswith('https://')
+def load_json(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as fh:
+        return json.load(fh)
 
 
-def read_sources(sources_file: Path) -> List[str]:
-    if not sources_file.exists():
-        return []
-
-    lines: List[str] = []
-    for raw in sources_file.read_text(encoding='utf-8').splitlines():
-        line = raw.strip()
-        if not line or line.startswith('#'):
-            continue
-        lines.append(line)
-    return lines
+def is_url(value: str) -> bool:
+    return value.startswith("http://") or value.startswith("https://")
 
 
-def download_url(source_url: str) -> Path:
-    ensure_dir(DOWNLOAD_DIR)
-    token = hashlib.sha1(source_url.encode('utf-8')).hexdigest()[:12]
-    template = str(DOWNLOAD_DIR / f'clip-{token}.%(ext)s')
-
-    options = {
-        'format': 'bv*+ba/best',
-        'outtmpl': template,
-        'quiet': True,
-        'noplaylist': True,
-        'merge_output_format': 'mp4',
-    }
-
-    with YoutubeDL(options) as ydl:
-        info = ydl.extract_info(source_url, download=True)
-        filename = ydl.prepare_filename(info)
-        return Path(filename)
+def is_youtube_url(value: str) -> bool:
+    lower = value.lower()
+    return "youtu.be" in lower or "youtube.com" in lower
 
 
-def load_clip(source: str) -> VideoFileClip:
-    if is_url(source):
-        path = download_url(source)
-    else:
-        path = Path(source).expanduser()
-        if not path.is_absolute():
-            path = (ROOT / path).resolve()
-
-    if not path.exists():
-        raise FileNotFoundError('Source clip not found: {}'.format(source))
-
-    return VideoFileClip(str(path))
+def is_gdrive_url(value: str) -> bool:
+    lower = value.lower()
+    return "drive.google.com" in lower
 
 
-def safe_font(size: int) -> ImageFont.FreeTypeFont:
-    font_candidates = [
-        '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
-        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+def slugify(value: str) -> str:
+    digest = hashlib.sha1(value.encode("utf-8")).hexdigest()[:12]
+    return f"asset_{digest}"
+
+
+def download_source(source: str, workdir: Path) -> Path:
+    candidate = Path(source)
+    if candidate.exists():
+        return candidate.resolve()
+
+    if not is_url(source):
+        raise FileNotFoundError(f"Source not found: {source}")
+
+    workdir.mkdir(parents=True, exist_ok=True)
+    base_name = slugify(source)
+
+    if is_youtube_url(source):
+        import yt_dlp
+
+        outtmpl = str(workdir / f"{base_name}.%(ext)s")
+        opts = {
+            "outtmpl": outtmpl,
+            "format": "bv*+ba/best",
+            "merge_output_format": "mp4",
+            "quiet": True,
+            "no_warnings": True,
+        }
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(source, download=True)
+            prepared = Path(ydl.prepare_filename(info))
+            if prepared.exists():
+                return prepared
+            for ext in ("mp4", "mkv", "webm", "mov", "m4v"):
+                alt = prepared.with_suffix(f".{ext}")
+                if alt.exists():
+                    return alt
+            matches = sorted(workdir.glob(f"{base_name}.*"))
+            if matches:
+                return matches[0]
+        raise RuntimeError(f"YouTube download failed for {source}")
+
+    if is_gdrive_url(source):
+        import gdown
+
+        out_path = workdir / f"{base_name}.mp4"
+        downloaded = gdown.download(url=source, output=str(out_path), quiet=True, fuzzy=True)
+        if downloaded:
+            return Path(downloaded)
+        raise RuntimeError(f"Google Drive download failed for {source}")
+
+    out_path = workdir / f"{base_name}.mp4"
+    urllib.request.urlretrieve(source, out_path)
+    return out_path
+
+
+def normalize_position(value: Any) -> Any:
+    if isinstance(value, list) and len(value) == 2:
+        return tuple(value)
+    if isinstance(value, str):
+        return POSITION_MAP.get(value, value)
+    return value
+
+
+def load_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    candidates = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     ]
-    for candidate in font_candidates:
+    for candidate in candidates:
         if Path(candidate).exists():
             return ImageFont.truetype(candidate, size=size)
     return ImageFont.load_default()
 
 
-def text_card_image(text: str, subtitle: Optional[str], size: tuple[int, int] = (1280, 720)) -> Path:
-    ensure_dir(TEMP_DIR)
-    image = Image.new('RGBA', size, (0, 0, 0, 0))
+def build_text_overlay(entry: dict[str, Any], workdir: Path) -> Path:
+    text = str(entry.get("text", ""))
+    font_size = int(entry.get("font_size", 48))
+    font_color = entry.get("font_color", "#ffffff")
+    box_color = entry.get("box_color", "#111827cc")
+    padding = int(entry.get("padding", 24))
+    radius = int(entry.get("radius", 18))
+    font = load_font(font_size)
+
+    dummy = Image.new("RGBA", (10, 10), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(dummy)
+    bbox = draw.multiline_textbbox((0, 0), text, font=font, spacing=8)
+    width = (bbox[2] - bbox[0]) + padding * 2
+    height = (bbox[3] - bbox[1]) + padding * 2
+
+    image = Image.new("RGBA", (max(width, 8), max(height, 8)), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
+    if box_color:
+        draw.rounded_rectangle((0, 0, image.width - 1, image.height - 1), radius=radius, fill=ImageColor.getcolor(box_color, "RGBA"))
+    draw.multiline_text((padding, padding), text, font=font, fill=ImageColor.getcolor(font_color, "RGBA"), spacing=8)
 
-    panel_margin = 70
-    panel = [
-        panel_margin,
-        int(size[1] * 0.18),
-        size[0] - panel_margin,
-        int(size[1] * 0.82),
-    ]
-    draw.rounded_rectangle(panel, radius=36, fill=(11, 16, 32, 220), outline=(0, 255, 200, 190), width=4)
-
-    title_font = safe_font(78)
-    subtitle_font = safe_font(36)
-
-    title_box = draw.textbbox((0, 0), text, font=title_font)
-    title_width = title_box[2] - title_box[0]
-    title_height = title_box[3] - title_box[1]
-    title_x = (size[0] - title_width) // 2
-    title_y = int(size[1] * 0.36) - title_height // 2
-    draw.text((title_x + 3, title_y + 3), text, font=title_font, fill=(0, 0, 0, 200))
-    draw.text((title_x, title_y), text, font=title_font, fill=(245, 250, 255, 255))
-
-    if subtitle:
-        subtitle_box = draw.textbbox((0, 0), subtitle, font=subtitle_font)
-        subtitle_width = subtitle_box[2] - subtitle_box[0]
-        subtitle_x = (size[0] - subtitle_width) // 2
-        subtitle_y = title_y + title_height + 28
-        draw.text((subtitle_x + 2, subtitle_y + 2), subtitle, font=subtitle_font, fill=(0, 0, 0, 170))
-        draw.text((subtitle_x, subtitle_y), subtitle, font=subtitle_font, fill=(170, 245, 235, 255))
-
-    out_path = TEMP_DIR / 'brand-card.png'
+    out_path = workdir / f"text_{slugify(text)}.png"
     image.save(out_path)
     return out_path
 
 
-def create_text_overlay(text: str, duration: float, subtitle: Optional[str] = None, size: tuple[int, int] = (1280, 720)) -> ImageClip:
-    card_path = text_card_image(text=text, subtitle=subtitle, size=size)
-    return ImageClip(str(card_path)).set_duration(duration)
+def source_to_clip(entry: dict[str, Any], workdir: Path) -> VideoFileClip:
+    source = entry["source"]
+    clip_path = download_source(source, workdir)
+    clip = VideoFileClip(str(clip_path))
+
+    trim_start = float(entry.get("trim_start", 0) or 0)
+    trim_end = entry.get("trim_end")
+    if trim_start or trim_end is not None:
+        clip = clip.subclip(trim_start, float(trim_end) if trim_end is not None else clip.duration)
+
+    if entry.get("size"):
+        clip = clip.resize(newsize=tuple(entry["size"]))
+
+    if entry.get("volume") is not None and clip.audio is not None:
+        clip = clip.volumex(float(entry["volume"]))
+
+    return clip
 
 
-def create_image_overlay(image_path: str, duration: float, position: tuple[str, str] = ('right', 'bottom'), width: int = 300) -> ImageClip:
-    resolved = Path(image_path).expanduser()
-    if not resolved.is_absolute():
-        resolved = (ROOT / resolved).resolve()
-    return ImageClip(str(resolved)).set_duration(duration).resize(width=width).set_position(position)
+def build_overlay_clip(entry: dict[str, Any], workdir: Path) -> Any:
+    overlay_type = entry.get("type", "text")
+    start = float(entry.get("start", 0) or 0)
+    duration = entry.get("duration")
+    position = normalize_position(entry.get("position", "center"))
+
+    if overlay_type == "text":
+        image_path = build_text_overlay(entry, workdir)
+        clip = ImageClip(str(image_path))
+        clip = clip.set_start(start).set_duration(float(duration or entry.get("default_duration", 3))).set_position(position)
+        if entry.get("opacity") is not None:
+            clip = clip.set_opacity(float(entry["opacity"]))
+        return clip
+
+    if overlay_type == "image":
+        source = download_source(entry["source"], workdir)
+        clip = ImageClip(str(source)).set_start(start).set_duration(float(duration or entry.get("default_duration", 3))).set_position(position)
+        if entry.get("size"):
+            clip = clip.resize(newsize=tuple(entry["size"]))
+        if entry.get("opacity") is not None:
+            clip = clip.set_opacity(float(entry["opacity"]))
+        return clip
+
+    if overlay_type == "video":
+        source = download_source(entry["source"], workdir)
+        clip = VideoFileClip(str(source))
+        trim_start = float(entry.get("trim_start", 0) or 0)
+        trim_end = entry.get("trim_end")
+        if trim_start or trim_end is not None:
+            clip = clip.subclip(trim_start, float(trim_end) if trim_end is not None else clip.duration)
+        if entry.get("size"):
+            clip = clip.resize(newsize=tuple(entry["size"]))
+        if duration is not None:
+            clip = clip.subclip(0, min(float(duration), clip.duration))
+        clip = clip.set_start(start).set_position(position).set_audio(None)
+        if entry.get("opacity") is not None:
+            clip = clip.set_opacity(float(entry["opacity"]))
+        return clip
+
+    raise ValueError(f"Unsupported overlay type: {overlay_type}")
 
 
-def create_video_overlay(source: str, duration: float, position: tuple[str, str] = ('right', 'bottom'), width: int = 340) -> VideoFileClip:
-    clip = load_clip(source)
-    overlay = clip.subclip(0, min(duration, clip.duration))
-    return overlay.resize(width=width).set_position(position)
-
-
-def build_base_sequence(sources: Iterable[str], fallback_duration: float = 4.0) -> List[VideoFileClip]:
-    loaded: List[VideoFileClip] = []
-    for source in sources:
-        clip = load_clip(source)
-        end_time = min(clip.duration, fallback_duration)
-        loaded.append(clip.subclip(0, end_time))
-    return loaded
-
-
-def build_placeholder_sequence(title: str) -> List[ColorClip]:
-    base = ColorClip(size=(1280, 720), color=(12, 18, 36), duration=4.0)
-    return [base]
-
-
-def render_video(
-    sources: List[str],
-    output_path: Path,
-    title: str,
-    subtitle: str,
-    overlay_image: Optional[str] = None,
-    overlay_video: Optional[str] = None,
-) -> None:
-    ensure_dir(output_path.parent)
-
-    clips = build_base_sequence(sources)
-    if not clips:
-        clips = build_placeholder_sequence(title)
-
-    stitched = concatenate_videoclips(clips, method='compose')
-    layers = [stitched]
-    layers.append(create_text_overlay(title, stitched.duration, subtitle=subtitle, size=stitched.size))
-
-    if overlay_image:
-        layers.append(create_image_overlay(overlay_image, stitched.duration))
-
-    if overlay_video:
-        layers.append(create_video_overlay(overlay_video, stitched.duration))
-
-    final = CompositeVideoClip(layers, size=stitched.size)
-    try:
-        final.write_videofile(
-            str(output_path),
-            codec='libx264',
-            audio_codec='aac',
-            fps=24,
-            temp_audiofile=str(output_path.with_suffix('.temp-audio.m4a')),
-            remove_temp=True,
-        )
-    finally:
-        final.close()
-        stitched.close()
-        for clip in clips:
-            clip.close()
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description='Render a video from multiple clips and overlays.')
-    parser.add_argument('--sources-file', default=str(DEFAULT_SOURCES_FILE), help='Path to a newline-delimited list of clip sources.')
-    parser.add_argument('--output', default=str(DEFAULT_OUTPUT), help='Output mp4 path.')
-    parser.add_argument('--title', default='Humanoids Now', help='Title text for the branded overlay.')
-    parser.add_argument('--subtitle', default='Video generation boilerplate with clip stitching and overlays', help='Subtitle for the branded overlay.')
-    parser.add_argument('--overlay-image', default=None, help='Optional local image overlay path.')
-    parser.add_argument('--overlay-video', default=None, help='Optional local or URL secondary video overlay.')
-    return parser.parse_args()
+def ensure_output_path(path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def main() -> None:
-    args = parse_args()
-    sources_file = Path(args.sources_file)
-    if not sources_file.is_absolute():
-        sources_file = (ROOT / sources_file).resolve()
+    parser = argparse.ArgumentParser(description="Generate a stitched and overlaid MP4 from JSON config.")
+    parser.add_argument("--config", default="example.config.json", help="Path to JSON config file")
+    parser.add_argument("--output", default=None, help="Output MP4 path")
+    args = parser.parse_args()
 
-    sources = read_sources(sources_file)
-    render_video(
-        sources=sources,
-        output_path=Path(args.output),
-        title=args.title,
-        subtitle=args.subtitle,
-        overlay_image=args.overlay_image,
-        overlay_video=args.overlay_video,
-    )
-    print('Saved {}'.format(Path(args.output)))
+    config_path = Path(args.config)
+    config = load_json(config_path)
+    output_path = ensure_output_path(Path(args.output or config.get("output", "output/generated-video.mp4")))
+
+    render = config.get("render", {})
+    render_size = tuple(render["size"]) if render.get("size") else None
+    fps = int(render.get("fps", 24))
+
+    clip_sources = config.get("clip_sources", [])
+    if not clip_sources:
+        raise ValueError("Config must include at least one clip_sources entry.")
+
+    overlays = config.get("overlays", [])
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        workdir = Path(tmpdir)
+        clips = [source_to_clip(dict(entry), workdir) for entry in clip_sources]
+
+        if render_size:
+            clips = [clip.resize(newsize=render_size) for clip in clips]
+
+        base = concatenate_videoclips(clips, method="compose")
+        overlay_clips = [build_overlay_clip(dict(entry), workdir) for entry in overlays]
+
+        if render_size:
+            final = CompositeVideoClip([base, *overlay_clips], size=render_size)
+        else:
+            final = CompositeVideoClip([base, *overlay_clips], size=base.size)
+
+        final.write_videofile(
+            str(output_path),
+            fps=fps,
+            codec="libx264",
+            audio_codec="aac",
+            threads=4,
+        )
+
+        final.close()
+        base.close()
+        for clip in clips:
+            clip.close()
+        for overlay in overlay_clips:
+            try:
+                overlay.close()
+            except Exception:
+                pass
+
+    print(f"Wrote {output_path}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
