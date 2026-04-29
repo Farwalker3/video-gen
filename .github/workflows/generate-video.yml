@@ -9,6 +9,9 @@ on:
       - "requirements.txt"
       - ".github/workflows/generate-video.yml"
 
+permissions:
+  contents: write
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -41,3 +44,10 @@ jobs:
           name: generated-video
           path: output/generated-video.mp4
           if-no-files-found: error
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: render-${{ github.run_id }}
+          name: Latest Render
+          files: output/generated-video.mp4
