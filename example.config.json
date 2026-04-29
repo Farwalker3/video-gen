@@ -15,460 +15,564 @@
     "threads": 4
   },
   "transitions": {
-    "default_duration": 0.85
+    "default_duration": 0.45
   },
   "timeline": {
     "scenes": [
       {
         "start": 0,
-        "duration": 18,
-        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
+        "duration": 15.45,
+        "source": "https://drive.google.com/file/d/1AI0F6Ol4StzGg4gQ4BP1cBKEg18DauHM/view?usp=drivesdk",
         "trim_start": 0,
-        "trim_end": 18.85,
+        "trim_end": 15.45,
         "ken_burns": {
-          "zoom_start": 1,
-          "zoom_end": 1.08,
-          "pan_start_x": 0.38,
-          "pan_start_y": 0.28,
-          "pan_end_x": 0.58,
-          "pan_end_y": 0.42
+          "zoom_start": 1.04,
+          "zoom_end": 1.15,
+          "pan_start_x": 0.46,
+          "pan_start_y": 0.42,
+          "pan_end_x": 0.56,
+          "pan_end_y": 0.48
         },
         "transition": {
           "in": 0,
-          "out": 0.85
+          "out": 0.45
         },
         "overlays": [
           {
             "type": "text",
-            "text": "Professional super pitch\nTechnical depth + creative scale",
-            "start": 0.4,
-            "duration": 5.8,
+            "text": "NO STOCK FOOTAGE\nJUST THE DRIVE ASSETS",
+            "start": 0.2,
+            "duration": 5.2,
             "position": [
-              60,
-              60
+              250,
+              80
             ],
-            "font_size": 40,
-            "box_color": "#0f172acc",
-            "fade_in": 0.35,
-            "fade_out": 0.4
+            "font_size": 54,
+            "box_color": "#050505cc",
+            "font_color": "#ffffff",
+            "padding": 28,
+            "radius": 24,
+            "fade_in": 0.25,
+            "fade_out": 0.3
+          },
+          {
+            "type": "text",
+            "text": "RACCOON ROBOT",
+            "start": 5,
+            "duration": 4.6,
+            "position": [
+              320,
+              200
+            ],
+            "font_size": 46,
+            "box_color": "#111827cc",
+            "font_color": "#ffffff",
+            "padding": 24,
+            "radius": 22,
+            "fade_in": 0.22,
+            "fade_out": 0.28
           },
           {
             "type": "browser_window",
-            "start": 2,
-            "duration": 14,
+            "start": 7,
+            "duration": 7,
             "position": [
-              50,
-              170
+              690,
+              330
             ],
             "size": [
-              560,
-              390
+              510,
+              300
             ],
-            "url": "kodair.us",
-            "title": "Kodair",
-            "headline": "Public digital footprint",
-            "subheadline": "A visible home base for the project ecosystem",
+            "url": "drive.google.com",
+            "title": "Source check",
+            "headline": "Raccoon robot asset",
+            "subheadline": "Exclusive visual source",
             "body_lines": [
-              "Kodair is the public-facing footprint that frames the work and keeps the larger story coherent.",
-              "It ties the creator identity, experimentation, and launch-ready narrative into one surface."
+              "The timeline uses only the provided Drive video.",
+              "No stock footage and no filler shots."
             ],
             "chips": [
-              "site",
-              "identity",
-              "launch surface"
+              "drive",
+              "verified",
+              "cinematic"
             ],
             "cards": [
               {
-                "title": "Hub",
-                "body": "A central public home for the project ecosystem"
+                "title": "Source",
+                "body": "Drive link provided by the user"
               },
-              {
-                "title": "Signal",
-                "body": "Shows an active and durable digital presence"
-              },
-              {
-                "title": "Context",
-                "body": "Connects technical work with a readable story"
-              }
-            ],
-            "accent_color": "#22c55e"
-          },
-          {
-            "type": "browser_window",
-            "start": 3,
-            "duration": 13,
-            "position": [
-              670,
-              170
-            ],
-            "size": [
-              560,
-              390
-            ],
-            "url": "humanoids-now.kodair.us",
-            "title": "Humanoids Now",
-            "headline": "Raccoon AI partner",
-            "subheadline": "Bipedal robotics, autonomy, and a memorable assistant character",
-            "body_lines": [
-              "The robot becomes both a technical proof point and an approachable story hook.",
-              "It is the bridge between engineering depth and a friendly product narrative."
-            ],
-            "chips": [
-              "robot",
-              "autonomy",
-              "AI partner"
-            ],
-            "cards": [
               {
                 "title": "Motion",
-                "body": "Bipedal systems and human-centered motion"
+                "body": "Ken Burns push for trailer energy"
               },
               {
-                "title": "Intelligence",
-                "body": "An AI partner with product-ready framing"
-              },
-              {
-                "title": "Narrative",
-                "body": "A raccoon companion that is easy to remember"
+                "title": "Rule",
+                "body": "No stock footage anywhere in the cut"
               }
             ],
-            "accent_color": "#f59e0b"
+            "accent_color": "#f97316",
+            "opacity": 0.97
           }
         ]
       },
       {
-        "start": 18,
-        "duration": 18,
-        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv",
+        "start": 15,
+        "duration": 15.45,
+        "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
         "trim_start": 0,
-        "trim_end": 18.85,
+        "trim_end": 15.45,
         "ken_burns": {
-          "zoom_start": 1.02,
-          "zoom_end": 1.1,
-          "pan_start_x": 0.45,
+          "zoom_start": 1.03,
+          "zoom_end": 1.12,
+          "pan_start_x": 0.4,
           "pan_start_y": 0.3,
-          "pan_end_x": 0.62,
-          "pan_end_y": 0.5
+          "pan_end_x": 0.58,
+          "pan_end_y": 0.45
         },
         "transition": {
-          "in": 0.85,
-          "out": 0.85
+          "in": 0.45,
+          "out": 0.45
         },
         "overlays": [
           {
             "type": "text",
-            "text": "Rogues assets\nTV show teaser with franchise scale",
-            "start": 18.4,
-            "duration": 5.8,
+            "text": "WORLD OF ROGUES",
+            "start": 15.2,
+            "duration": 5,
             "position": [
-              60,
-              60
+              280,
+              80
             ],
-            "font_size": 38,
+            "font_size": 58,
+            "box_color": "#0f172acc",
+            "font_color": "#ffffff",
+            "padding": 26,
+            "radius": 24,
+            "fade_in": 0.25,
+            "fade_out": 0.3
+          },
+          {
+            "type": "text",
+            "text": "TRAILER ENERGY\nNOT A SLIDE DECK",
+            "start": 19.8,
+            "duration": 4.8,
+            "position": [
+              255,
+              190
+            ],
+            "font_size": 42,
             "box_color": "#111827cc",
-            "fade_in": 0.4,
-            "fade_out": 0.4
+            "font_color": "#ffffff",
+            "padding": 24,
+            "radius": 22,
+            "fade_in": 0.22,
+            "fade_out": 0.28
           },
           {
             "type": "browser_window",
-            "start": 19.2,
-            "duration": 15,
+            "start": 16.8,
+            "duration": 7,
             "position": [
-              90,
-              155
+              60,
+              340
             ],
             "size": [
-              1100,
-              430
+              520,
+              300
             ],
-            "url": "rogues.montaigne.io",
-            "title": "World of Rogues",
-            "headline": "Rogues assets",
-            "subheadline": "A teaser surface for the animated series and the larger IP world",
+            "url": "inbox",
+            "title": "Email update",
+            "headline": "Browser and email visuals stay in the cut",
+            "subheadline": "Updates are part of the rhythm",
             "body_lines": [
-              "The visual language should feel like a series teaser, not just a website preview.",
-              "It needs to carry character, worldbuilding, and license-ready ambition at a glance."
+              "Inbox style panels keep the story moving.",
+              "The footage stays clean and cinematic."
             ],
             "chips": [
-              "teaser",
-              "IP",
-              "merch ready",
-              "worldbuilding"
+              "updates",
+              "inbox",
+              "motion"
             ],
             "cards": [
               {
-                "title": "Show",
-                "body": "The World of Rogues TV show teaser front and center"
+                "title": "Update",
+                "body": "Keep the browser style visualization alive"
               },
               {
-                "title": "Scale",
-                "body": "Animated IP with room for licensing and partnerships"
+                "title": "Look",
+                "body": "No plain slide deck treatment"
               },
               {
                 "title": "Energy",
-                "body": "Fox characters, attitude, and a clean pitch surface"
+                "body": "Faster cuts and harder transitions"
               }
             ],
-            "accent_color": "#ef4444"
+            "accent_color": "#ef4444",
+            "opacity": 0.97
           }
         ]
       },
       {
-        "start": 36,
-        "duration": 18,
-        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
-        "trim_start": 0,
-        "trim_end": 18.85,
+        "start": 30,
+        "duration": 15.45,
+        "source": "https://drive.google.com/file/d/1AI0F6Ol4StzGg4gQ4BP1cBKEg18DauHM/view?usp=drivesdk",
+        "trim_start": 3,
+        "trim_end": 18.45,
         "ken_burns": {
-          "zoom_start": 1,
-          "zoom_end": 1.12,
+          "zoom_start": 1.05,
+          "zoom_end": 1.18,
           "pan_start_x": 0.52,
-          "pan_start_y": 0.25,
-          "pan_end_x": 0.34,
-          "pan_end_y": 0.47
+          "pan_start_y": 0.36,
+          "pan_end_x": 0.64,
+          "pan_end_y": 0.5
         },
         "transition": {
-          "in": 0.85,
-          "out": 0.85
+          "in": 0.45,
+          "out": 0.45
         },
         "overlays": [
           {
             "type": "text",
-            "text": "Momentum",
-            "start": 36.3,
-            "duration": 5,
-            "position": [
-              60,
-              60
-            ],
-            "font_size": 42,
-            "box_color": "#1f2937cc",
-            "fade_in": 0.35,
-            "fade_out": 0.4
-          },
-          {
-            "type": "text",
-            "text": "My name is John C Barr and I am the creator of World of Rogues",
-            "start": 37.1,
-            "duration": 4.2,
-            "position": [
-              70,
-              160
-            ],
-            "font_size": 24,
-            "box_color": "#0f172acc",
-            "fade_in": 0.25,
-            "fade_out": 0.25
-          },
-          {
-            "type": "text",
-            "text": "Could you please let me know what the next steps would be",
-            "start": 40.1,
-            "duration": 4.2,
-            "position": [
-              120,
-              235
-            ],
-            "font_size": 24,
-            "box_color": "#1e293bcc",
-            "fade_in": 0.25,
-            "fade_out": 0.25
-          },
-          {
-            "type": "text",
-            "text": "minimum order quantities • design process • timelines",
-            "start": 43.1,
-            "duration": 4.2,
-            "position": [
-              190,
-              310
-            ],
-            "font_size": 24,
-            "box_color": "#312e81cc",
-            "fade_in": 0.25,
-            "fade_out": 0.25
-          },
-          {
-            "type": "text",
-            "text": "I would be grateful for any guidance on the right contact",
-            "start": 46.1,
-            "duration": 4.2,
-            "position": [
-              260,
-              385
-            ],
-            "font_size": 24,
-            "box_color": "#78350fcc",
-            "fade_in": 0.25,
-            "fade_out": 0.25
-          }
-        ]
-      },
-      {
-        "start": 54,
-        "duration": 18,
-        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv",
-        "trim_start": 0,
-        "trim_end": 18.85,
-        "ken_burns": {
-          "zoom_start": 1,
-          "zoom_end": 1.08,
-          "pan_start_x": 0.44,
-          "pan_start_y": 0.35,
-          "pan_end_x": 0.56,
-          "pan_end_y": 0.45
-        },
-        "transition": {
-          "in": 0.85,
-          "out": 0.85
-        },
-        "overlays": [
-          {
-            "type": "text",
-            "text": "Core pillars",
-            "start": 54.3,
+            "text": "TRAILER VOICE",
+            "start": 30.2,
             "duration": 4.5,
             "position": [
-              60,
-              60
+              360,
+              80
             ],
-            "font_size": 42,
-            "box_color": "#0f172acc",
-            "fade_in": 0.35,
-            "fade_out": 0.4
-          },
-          {
-            "type": "text",
-            "text": "Raccoon AI partner",
-            "start": 55,
-            "duration": 5,
-            "position": [
-              60,
-              155
-            ],
-            "font_size": 36,
-            "box_color": "#1f2937cc",
-            "fade_in": 0.3,
-            "fade_out": 0.35
-          },
-          {
-            "type": "text",
-            "text": "Humanoids Now robot",
-            "start": 55.8,
-            "duration": 5,
-            "position": [
-              80,
-              230
-            ],
-            "font_size": 32,
-            "box_color": "#14532dcc",
-            "fade_in": 0.3,
-            "fade_out": 0.35
-          },
-          {
-            "type": "text",
-            "text": "The World of Rogues TV show teaser",
-            "start": 56.6,
-            "duration": 5,
-            "position": [
-              100,
-              305
-            ],
-            "font_size": 32,
-            "box_color": "#7f1d1dcc",
-            "fade_in": 0.3,
-            "fade_out": 0.35
-          },
-          {
-            "type": "text",
-            "text": "Two worlds one execution path",
-            "start": 63,
-            "duration": 5.5,
-            "position": [
-              60,
-              390
-            ],
-            "font_size": 28,
-            "box_color": "#334155cc",
+            "font_size": 56,
+            "box_color": "#111827cc",
+            "font_color": "#ffffff",
+            "padding": 26,
+            "radius": 24,
             "fade_in": 0.25,
             "fade_out": 0.3
+          },
+          {
+            "type": "text",
+            "text": "en-US-GuyNeural\nrate minus ten\npitch minus ten",
+            "start": 34.3,
+            "duration": 5.5,
+            "position": [
+              310,
+              190
+            ],
+            "font_size": 38,
+            "box_color": "#0f172acc",
+            "font_color": "#ffffff",
+            "padding": 24,
+            "radius": 22,
+            "fade_in": 0.22,
+            "fade_out": 0.28
           }
         ]
       },
       {
-        "start": 72,
-        "duration": 18,
-        "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
-        "trim_start": 0,
-        "trim_end": 18.85,
+        "start": 45,
+        "duration": 15.45,
+        "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
+        "trim_start": 5,
+        "trim_end": 20.45,
         "ken_burns": {
-          "zoom_start": 1,
-          "zoom_end": 1.07,
+          "zoom_start": 1.04,
+          "zoom_end": 1.14,
           "pan_start_x": 0.44,
-          "pan_start_y": 0.35,
+          "pan_start_y": 0.28,
           "pan_end_x": 0.56,
-          "pan_end_y": 0.45
+          "pan_end_y": 0.44
         },
         "transition": {
-          "in": 0.85,
+          "in": 0.45,
+          "out": 0.45
+        },
+        "overlays": [
+          {
+            "type": "text",
+            "text": "BOLD CENTERED TITLES",
+            "start": 45.2,
+            "duration": 4.8,
+            "position": [
+              220,
+              75
+            ],
+            "font_size": 54,
+            "box_color": "#030712cc",
+            "font_color": "#ffffff",
+            "padding": 26,
+            "radius": 24,
+            "fade_in": 0.25,
+            "fade_out": 0.3
+          },
+          {
+            "type": "text",
+            "text": "HIGH CONTRAST\nDIRECTLY ON THE VIDEO",
+            "start": 49.5,
+            "duration": 5,
+            "position": [
+              220,
+              180
+            ],
+            "font_size": 42,
+            "box_color": "#111827cc",
+            "font_color": "#ffffff",
+            "padding": 24,
+            "radius": 22,
+            "fade_in": 0.22,
+            "fade_out": 0.28
+          },
+          {
+            "type": "browser_window",
+            "start": 52,
+            "duration": 7,
+            "position": [
+              700,
+              340
+            ],
+            "size": [
+              500,
+              280
+            ],
+            "url": "render",
+            "title": "Status update",
+            "headline": "No slide deck look",
+            "subheadline": "Cinematic titles only",
+            "body_lines": [
+              "Titles sit on the footage, not on plain slides.",
+              "The cut keeps moving with the voiceover."
+            ],
+            "chips": [
+              "titles",
+              "motion",
+              "render"
+            ],
+            "cards": [
+              {
+                "title": "Look",
+                "body": "Centered high contrast overlays"
+              },
+              {
+                "title": "Pacing",
+                "body": "Fast and cinematic"
+              },
+              {
+                "title": "Rule",
+                "body": "No stock, no slide deck"
+              }
+            ],
+            "accent_color": "#22c55e",
+            "opacity": 0.97
+          }
+        ]
+      },
+      {
+        "start": 60,
+        "duration": 15.45,
+        "source": "https://drive.google.com/file/d/1AI0F6Ol4StzGg4gQ4BP1cBKEg18DauHM/view?usp=drivesdk",
+        "trim_start": 6,
+        "trim_end": 21.45,
+        "ken_burns": {
+          "zoom_start": 1.03,
+          "zoom_end": 1.16,
+          "pan_start_x": 0.42,
+          "pan_start_y": 0.4,
+          "pan_end_x": 0.58,
+          "pan_end_y": 0.48
+        },
+        "transition": {
+          "in": 0.45,
+          "out": 0.45
+        },
+        "overlays": [
+          {
+            "type": "text",
+            "text": "FASTER CUTS",
+            "start": 60.3,
+            "duration": 4,
+            "position": [
+              380,
+              90
+            ],
+            "font_size": 60,
+            "box_color": "#111827cc",
+            "font_color": "#ffffff",
+            "padding": 26,
+            "radius": 24,
+            "fade_in": 0.24,
+            "fade_out": 0.28
+          },
+          {
+            "type": "text",
+            "text": "KEN BURNS\nHARD TRANSITIONS",
+            "start": 64,
+            "duration": 5.2,
+            "position": [
+              275,
+              200
+            ],
+            "font_size": 44,
+            "box_color": "#0f172acc",
+            "font_color": "#ffffff",
+            "padding": 24,
+            "radius": 22,
+            "fade_in": 0.22,
+            "fade_out": 0.28
+          },
+          {
+            "type": "browser_window",
+            "start": 67,
+            "duration": 7,
+            "position": [
+              60,
+              350
+            ],
+            "size": [
+              520,
+              280
+            ],
+            "url": "email",
+            "title": "Inbox visualization",
+            "headline": "Updates stay present",
+            "subheadline": "But the visuals stay exclusive",
+            "body_lines": [
+              "No stock footage was used.",
+              "Only the two Drive clips drive the timeline."
+            ],
+            "chips": [
+              "email",
+              "updates",
+              "verified"
+            ],
+            "cards": [
+              {
+                "title": "Source",
+                "body": "Only the two user provided Drive links"
+              },
+              {
+                "title": "Motion",
+                "body": "Trailers style pacing"
+              },
+              {
+                "title": "Result",
+                "body": "Clean and cinematic"
+              }
+            ],
+            "accent_color": "#38bdf8",
+            "opacity": 0.97
+          }
+        ]
+      },
+      {
+        "start": 75,
+        "duration": 15.45,
+        "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
+        "trim_start": 10,
+        "trim_end": 25.45,
+        "ken_burns": {
+          "zoom_start": 1.04,
+          "zoom_end": 1.15,
+          "pan_start_x": 0.46,
+          "pan_start_y": 0.36,
+          "pan_end_x": 0.58,
+          "pan_end_y": 0.5
+        },
+        "transition": {
+          "in": 0.45,
           "out": 0
         },
         "overlays": [
           {
             "type": "text",
-            "text": "One cohesive super pitch",
-            "start": 72.3,
-            "duration": 5,
+            "text": "ONE CREATOR",
+            "start": 75.2,
+            "duration": 4.3,
             "position": [
-              60,
-              70
+              290,
+              80
             ],
-            "font_size": 42,
-            "box_color": "#1f2937cc",
-            "fade_in": 0.35,
-            "fade_out": 0.35
-          },
-          {
-            "type": "text",
-            "text": "Kodair Humanoids Now and World of Rogues",
-            "start": 77.8,
-            "duration": 5.5,
-            "position": [
-              60,
-              160
-            ],
-            "font_size": 32,
-            "box_color": "#0f172acc",
+            "font_size": 56,
+            "box_color": "#111827cc",
+            "font_color": "#ffffff",
+            "padding": 26,
+            "radius": 24,
             "fade_in": 0.25,
             "fade_out": 0.3
           },
           {
             "type": "text",
-            "text": "Technical depth • creative scale • real momentum",
-            "start": 81.6,
-            "duration": 5.8,
+            "text": "TWO ASSETS\nONE BIGGER STORY",
+            "start": 79.3,
+            "duration": 5.2,
             "position": [
-              60,
-              245
+              245,
+              185
             ],
-            "font_size": 30,
+            "font_size": 46,
             "box_color": "#0f172acc",
-            "fade_in": 0.25,
-            "fade_out": 0.3
+            "font_color": "#ffffff",
+            "padding": 24,
+            "radius": 22,
+            "fade_in": 0.22,
+            "fade_out": 0.28
           },
           {
             "type": "text",
-            "text": "A 90 second narrative that feels ready for production",
-            "start": 84.6,
-            "duration": 4.6,
+            "text": "CUT TO BLACK",
+            "start": 84.8,
+            "duration": 3,
             "position": [
-              60,
+              410,
               330
             ],
-            "font_size": 28,
-            "box_color": "#14532dcc",
-            "fade_in": 0.25,
-            "fade_out": 0.3
+            "font_size": 48,
+            "box_color": "#030712cc",
+            "font_color": "#ffffff",
+            "padding": 22,
+            "radius": 20,
+            "fade_in": 0.18,
+            "fade_out": 0.25
+          },
+          {
+            "type": "browser_window",
+            "start": 83,
+            "duration": 7,
+            "position": [
+              650,
+              330
+            ],
+            "size": [
+              560,
+              310
+            ],
+            "url": "main",
+            "title": "Final update",
+            "headline": "Render committed to main",
+            "subheadline": "The pitch is locked",
+            "body_lines": [
+              "Final render uses only the two Drive sources.",
+              "Classic trailer voice and cinematic titles remain intact."
+            ],
+            "chips": [
+              "main",
+              "locked",
+              "final"
+            ],
+            "cards": [
+              {
+                "title": "Commit",
+                "body": "Pushed to main to trigger render"
+              },
+              {
+                "title": "Audio",
+                "body": "en-US-GuyNeural with dark trailer tone"
+              },
+              {
+                "title": "Visuals",
+                "body": "Raccoon robot plus World of Rogues"
+              }
+            ],
+            "accent_color": "#f59e0b",
+            "opacity": 0.97
           }
         ]
       }
@@ -486,50 +590,49 @@
       "segments": [
         {
           "start": 0,
-          "duration": 18,
-          "text": "Here is the super pitch: one creator, three live surfaces, and a single story that connects technical depth with creative scale."
+          "duration": 15,
+          "text": "No stock footage. Just two real Drive assets, cut like a movie trailer."
         },
         {
-          "start": 18,
-          "duration": 18,
-          "text": "Kodair and Humanoids Now show the digital footprint of the work, with a public hub, a raccoon AI partner, and a robotics direction that feels concrete."
+          "start": 15,
+          "duration": 15,
+          "text": "The Raccoon Robot and World of Rogues teaser carry the whole visual story."
         },
         {
-          "start": 36,
-          "duration": 18,
-          "text": "The World of Rogues teaser brings the creative side into view with show assets, character worldbuilding, and franchise scale."
+          "start": 30,
+          "duration": 15,
+          "text": "The browser style updates stay in the edit, but the frames stay clean."
         },
         {
-          "start": 54,
-          "duration": 18,
-          "text": "The momentum is real too: the outreach threads show active engagement, careful follow up, and a steady push toward the right industry partners."
+          "start": 45,
+          "duration": 15,
+          "text": "Bold centered titles land directly on the footage instead of slide deck panels."
         },
         {
-          "start": 72,
-          "duration": 18,
-          "text": "Put together, it becomes one cohesive ninety second pitch that connects engineering, intellectual property, and a path to production."
+          "start": 60,
+          "duration": 15,
+          "text": "Ken Burns motion and hard cuts push the pacing forward."
+        },
+        {
+          "start": 75,
+          "duration": 15,
+          "text": "One creator, two assets, one bigger pitch, and the render is locked."
         }
       ]
     }
   },
   "credits": [
     {
-      "title": "Background music",
-      "source": "https://soundcloud.com/scottbuckley/aurora-cc-by?in=sound-vybrations/sets/ambient",
-      "license": "Creative Commons Attribution 4.0",
-      "attribution": "Aurora by Scott Buckley"
+      "title": "Visual source",
+      "source": "https://drive.google.com/file/d/1AI0F6Ol4StzGg4gQ4BP1cBKEg18DauHM/view?usp=drivesdk",
+      "license": "User provided Drive asset",
+      "attribution": "Raccoon robot"
     },
     {
-      "title": "Supplemental visuals",
-      "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Plasma-engineerguy.ogv",
-      "license": "Wikimedia Commons free media",
-      "attribution": "Wikimedia Commons file: Plasma-engineerguy.ogv"
-    },
-    {
-      "title": "Supplemental visuals",
-      "source": "https://commons.wikimedia.org/wiki/Special:FilePath/Fiber-engineerguy.ogv",
-      "license": "Wikimedia Commons free media",
-      "attribution": "Wikimedia Commons file: Fiber-engineerguy.ogv"
+      "title": "Visual source",
+      "source": "https://drive.google.com/file/d/1TdZ7SPlPVYXhvWliug9458fKavWceLrB/view?usp=drivesdk",
+      "license": "User provided Drive asset",
+      "attribution": "World of Rogues teaser"
     }
   ]
 }
