@@ -1,0 +1,5 @@
+# One source per line. Use local paths or URLs.
+# Example YouTube clip for testing the downloader path:
+https://youtu.be/RoFu0ROP6oU
+# Example local file:
+# ./assets/clip-01.mp4
