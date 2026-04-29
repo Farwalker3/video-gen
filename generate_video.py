@@ -1,17 +1,28 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
+import asyncio
 import json
+import math
+import os
 import re
 import tempfile
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
+import numpy as np
 from PIL import Image, ImageColor, ImageDraw, ImageFont
-from moviepy.editor import CompositeVideoClip, ImageClip, VideoFileClip, concatenate_videoclips
+from moviepy.editor import (
+    AudioFileClip,
+    CompositeAudioClip,
+    CompositeVideoClip,
+    ImageClip,
+    VideoFileClip,
+    concatenate_audioclips,
+    concatenate_videoclips,
+)
 
 
 POSITION_MAP = {
@@ -22,6 +33,13 @@ POSITION_MAP = {
     "center": ("center", "center"),
 }
 
+DEFAULT_RENDER = {"size": [1280, 720], "fps": 24}
+DEFAULT_TRANSITION = 0.85
+DEFAULT_DUCK_VOLUME = 0.18
+DEFAULT_MUSIC_VOLUME = 0.28
+DEFAULT_TTS_ENGINE = "edge-tts"
+DEFAULT_TTS_VOICE = "en-US-GuyNeural"
+
 
 def load_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as fh:
@@ -30,11 +48,6 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def is_url(value: str) -> bool:
     return value.startswith("http://") or value.startswith("https://")
-
-
-def is_youtube_url(value: str) -> bool:
-    lower = value.lower()
-    return "youtu.be" in lower or "youtube.com" in lower
 
 
 def is_gdrive_url(value: str) -> bool:
@@ -57,8 +70,15 @@ def normalize_gdrive_url(source: str) -> str:
 
 
 def slugify(value: str) -> str:
-    digest = hashlib.sha1(value.encode("utf-8")).hexdigest()[:12]
-    return f"asset_{digest}"
+    digest = re.sub(r"[^a-zA-Z0-9]+", "-", value.lower()).strip("-")
+    if not digest:
+        digest = "asset"
+    return digest[:48]
+
+
+def ensure_dir(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def download_source(source: str, workdir: Path) -> Path:
@@ -69,10 +89,32 @@ def download_source(source: str, workdir: Path) -> Path:
     if not is_url(source):
         raise FileNotFoundError(f"Source not found: {source}")
 
-    workdir.mkdir(parents=True, exist_ok=True)
+    ensure_dir(workdir)
     base_name = slugify(source)
 
-    if is_youtube_url(source):
+    if "commons.wikimedia.org/wiki/File:" in source:
+        filename = source.split("File:", 1)[1].split("?", 1)[0].split("#", 1)[0]
+        direct_url = f"https://commons.wikimedia.org/wiki/Special:FilePath/{urllib.parse.quote(filename)}"
+        out_path = workdir / f"{base_name}{Path(filename).suffix or '.bin'}"
+        try:
+            urllib.request.urlretrieve(direct_url, out_path)
+            return out_path
+        except Exception:
+            pass
+
+    if is_gdrive_url(source):
+        import gdown
+
+        normalized_source = normalize_gdrive_url(source)
+        out_path = workdir / f"{base_name}.mp4"
+        downloaded = gdown.download(url=normalized_source, output=str(out_path), quiet=True, fuzzy=True)
+        if downloaded:
+            return Path(downloaded)
+        raise RuntimeError(f"Google Drive download failed for {source}")
+
+    # Generic fallbacks: yt-dlp can handle many webpage-based sources such as
+    # SoundCloud, Wikimedia Commons file pages, and stock-media landing pages.
+    try:
         import yt_dlp
 
         outtmpl = str(workdir / f"{base_name}.%(ext)s")
@@ -88,26 +130,17 @@ def download_source(source: str, workdir: Path) -> Path:
             prepared = Path(ydl.prepare_filename(info))
             if prepared.exists():
                 return prepared
-            for ext in ("mp4", "mkv", "webm", "mov", "m4v"):
+            for ext in ("mp4", "mkv", "webm", "mov", "m4v", "mp3", "m4a", "ogg", "oga", "opus", "wav"):
                 alt = prepared.with_suffix(f".{ext}")
                 if alt.exists():
                     return alt
             matches = sorted(workdir.glob(f"{base_name}.*"))
             if matches:
                 return matches[0]
-        raise RuntimeError(f"YouTube download failed for {source}")
+    except Exception:
+        pass
 
-    if is_gdrive_url(source):
-        import gdown
-
-        normalized_source = normalize_gdrive_url(source)
-        out_path = workdir / f"{base_name}.mp4"
-        downloaded = gdown.download(url=normalized_source, output=str(out_path), quiet=True, fuzzy=True)
-        if downloaded:
-            return Path(downloaded)
-        raise RuntimeError(f"Google Drive download failed for {source}")
-
-    out_path = workdir / f"{base_name}.mp4"
+    out_path = workdir / f"{base_name}.bin"
     urllib.request.urlretrieve(source, out_path)
     return out_path
 
@@ -118,6 +151,21 @@ def normalize_position(value: Any) -> Any:
     if isinstance(value, str):
         return POSITION_MAP.get(value, value)
     return value
+
+
+def coalesce_ranges(ranges: Iterable[tuple[float, float]]) -> list[tuple[float, float]]:
+    ordered = sorted((float(start), float(end)) for start, end in ranges if float(end) > float(start))
+    if not ordered:
+        return []
+
+    merged: list[list[float]] = [[ordered[0][0], ordered[0][1]]]
+    for start, end in ordered[1:]:
+        prev = merged[-1]
+        if start <= prev[1]:
+            prev[1] = max(prev[1], end)
+        else:
+            merged.append([start, end])
+    return [(start, end) for start, end in merged]
 
 
 def load_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -131,33 +179,90 @@ def load_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     return ImageFont.load_default()
 
 
-def build_text_overlay(entry: dict[str, Any], workdir: Path) -> Path:
+def build_text_image(entry: dict[str, Any], workdir: Path) -> Path:
     text = str(entry.get("text", ""))
-    font_size = int(entry.get("font_size", 48))
+    font_size = int(entry.get("font_size", 44))
     font_color = entry.get("font_color", "#ffffff")
     box_color = entry.get("box_color", "#111827cc")
-    padding = int(entry.get("padding", 24))
+    padding = int(entry.get("padding", 22))
     radius = int(entry.get("radius", 18))
+    line_spacing = int(entry.get("line_spacing", 8))
     font = load_font(font_size)
 
     dummy = Image.new("RGBA", (10, 10), (0, 0, 0, 0))
     draw = ImageDraw.Draw(dummy)
-    bbox = draw.multiline_textbbox((0, 0), text, font=font, spacing=8)
+    bbox = draw.multiline_textbbox((0, 0), text, font=font, spacing=line_spacing)
     width = (bbox[2] - bbox[0]) + padding * 2
     height = (bbox[3] - bbox[1]) + padding * 2
 
-    image = Image.new("RGBA", (max(width, 8), max(height, 8)), (0, 0, 0, 0))
+    image = Image.new("RGBA", (max(width, 12), max(height, 12)), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
     if box_color:
-        draw.rounded_rectangle((0, 0, image.width - 1, image.height - 1), radius=radius, fill=ImageColor.getcolor(box_color, "RGBA"))
-    draw.multiline_text((padding, padding), text, font=font, fill=ImageColor.getcolor(font_color, "RGBA"), spacing=8)
+        draw.rounded_rectangle(
+            (0, 0, image.width - 1, image.height - 1),
+            radius=radius,
+            fill=ImageColor.getcolor(box_color, "RGBA"),
+        )
+    draw.multiline_text(
+        (padding, padding),
+        text,
+        font=font,
+        fill=ImageColor.getcolor(font_color, "RGBA"),
+        spacing=line_spacing,
+    )
 
-    out_path = workdir / f"text_{slugify(text)}.png"
+    out_path = workdir / f"text-{slugify(text)}.png"
     image.save(out_path)
     return out_path
 
 
-def source_to_clip(entry: dict[str, Any], workdir: Path) -> VideoFileClip:
+def fit_to_frame(clip: Any, size: tuple[int, int]) -> Any:
+    target_w, target_h = size
+    if clip.w == target_w and clip.h == target_h:
+        return clip
+    scale = max(target_w / clip.w, target_h / clip.h)
+    resized = clip.resize(scale)
+    return resized.crop(width=target_w, height=target_h, x_center=resized.w / 2, y_center=resized.h / 2)
+
+
+def apply_ken_burns(clip: Any, effect: dict[str, Any], size: tuple[int, int]) -> Any:
+    start_zoom = float(effect.get("zoom_start", effect.get("zoom", 1.0)))
+    end_zoom = float(effect.get("zoom_end", effect.get("zoom", 1.08)))
+    start_x = float(effect.get("pan_start_x", 0.5))
+    start_y = float(effect.get("pan_start_y", 0.5))
+    end_x = float(effect.get("pan_end_x", start_x))
+    end_y = float(effect.get("pan_end_y", start_y))
+    width, height = size
+
+    base = fit_to_frame(clip, size)
+
+    def transform(get_frame, t):
+        progress = 0.0 if base.duration == 0 else min(max(t / base.duration, 0.0), 1.0)
+        zoom = start_zoom + (end_zoom - start_zoom) * progress
+        center_x = start_x + (end_x - start_x) * progress
+        center_y = start_y + (end_y - start_y) * progress
+        frame = get_frame(t)
+        image = Image.fromarray(frame)
+        scaled_w = max(width, int(width * zoom))
+        scaled_h = max(height, int(height * zoom))
+        image = image.resize((scaled_w, scaled_h), Image.LANCZOS)
+        max_x = max(0, scaled_w - width)
+        max_y = max(0, scaled_h - height)
+        x = int(max_x * min(max(center_x, 0.0), 1.0))
+        y = int(max_y * min(max(center_y, 0.0), 1.0))
+        crop = image.crop((x, y, x + width, y + height))
+        return np.array(crop)
+
+    return base.fl(transform)
+
+
+def parse_duration(value: Any) -> float | None:
+    if value is None:
+        return None
+    return float(value)
+
+
+def source_to_video_clip(entry: dict[str, Any], workdir: Path, render_size: tuple[int, int] | None) -> Any:
     source = entry["source"]
     clip_path = download_source(source, workdir)
     clip = VideoFileClip(str(clip_path))
@@ -167,11 +272,18 @@ def source_to_clip(entry: dict[str, Any], workdir: Path) -> VideoFileClip:
     if trim_start or trim_end is not None:
         clip = clip.subclip(trim_start, float(trim_end) if trim_end is not None else clip.duration)
 
-    if entry.get("size"):
-        clip = clip.resize(newsize=tuple(entry["size"]))
+    target_size = render_size or (clip.w, clip.h)
+    if entry.get("ken_burns"):
+        clip = apply_ken_burns(clip, dict(entry["ken_burns"]), target_size)
+    elif render_size:
+        clip = fit_to_frame(clip, target_size)
 
     if entry.get("volume") is not None and clip.audio is not None:
         clip = clip.volumex(float(entry["volume"]))
+
+    duration = parse_duration(entry.get("duration"))
+    if duration is not None and duration < clip.duration:
+        clip = clip.subclip(0, duration)
 
     return clip
 
@@ -179,24 +291,35 @@ def source_to_clip(entry: dict[str, Any], workdir: Path) -> VideoFileClip:
 def build_overlay_clip(entry: dict[str, Any], workdir: Path) -> Any:
     overlay_type = entry.get("type", "text")
     start = float(entry.get("start", 0) or 0)
-    duration = entry.get("duration")
+    duration = parse_duration(entry.get("duration"))
     position = normalize_position(entry.get("position", "center"))
+    fade_in = float(entry.get("fade_in", entry.get("animation", {}).get("fade_in", 0) if isinstance(entry.get("animation"), dict) else 0) or 0)
+    fade_out = float(entry.get("fade_out", entry.get("animation", {}).get("fade_out", 0) if isinstance(entry.get("animation"), dict) else 0) or 0)
 
     if overlay_type == "text":
-        image_path = build_text_overlay(entry, workdir)
-        clip = ImageClip(str(image_path))
-        clip = clip.set_start(start).set_duration(float(duration or entry.get("default_duration", 3))).set_position(position)
+        image_path = build_text_image(entry, workdir)
+        clip = ImageClip(str(image_path)).set_start(start).set_position(position)
+        clip = clip.set_duration(duration or float(entry.get("default_duration", 3)))
         if entry.get("opacity") is not None:
             clip = clip.set_opacity(float(entry["opacity"]))
+        if fade_in:
+            clip = clip.fadein(fade_in)
+        if fade_out:
+            clip = clip.fadeout(fade_out)
         return clip
 
     if overlay_type == "image":
         source = download_source(entry["source"], workdir)
-        clip = ImageClip(str(source)).set_start(start).set_duration(float(duration or entry.get("default_duration", 3))).set_position(position)
+        clip = ImageClip(str(source)).set_start(start).set_position(position)
+        clip = clip.set_duration(duration or float(entry.get("default_duration", 3)))
         if entry.get("size"):
             clip = clip.resize(newsize=tuple(entry["size"]))
         if entry.get("opacity") is not None:
             clip = clip.set_opacity(float(entry["opacity"]))
+        if fade_in:
+            clip = clip.fadein(fade_in)
+        if fade_out:
+            clip = clip.fadeout(fade_out)
         return clip
 
     if overlay_type == "video":
@@ -209,13 +332,231 @@ def build_overlay_clip(entry: dict[str, Any], workdir: Path) -> Any:
         if entry.get("size"):
             clip = clip.resize(newsize=tuple(entry["size"]))
         if duration is not None:
-            clip = clip.subclip(0, min(float(duration), clip.duration))
+            clip = clip.subclip(0, min(duration, clip.duration))
         clip = clip.set_start(start).set_position(position).set_audio(None)
         if entry.get("opacity") is not None:
             clip = clip.set_opacity(float(entry["opacity"]))
+        if fade_in:
+            clip = clip.fadein(fade_in)
+        if fade_out:
+            clip = clip.fadeout(fade_out)
         return clip
 
     raise ValueError(f"Unsupported overlay type: {overlay_type}")
+
+
+async def synthesize_speech(text: str, output_path: Path, engine: str, voice: str, lang: str, rate: str) -> Path:
+    engine = (engine or DEFAULT_TTS_ENGINE).lower()
+    if engine == "edge-tts":
+        import edge_tts
+
+        communicate = edge_tts.Communicate(text=text, voice=voice or DEFAULT_TTS_VOICE, rate=rate or "+0%")
+        await communicate.save(str(output_path))
+        return output_path
+
+    from gtts import gTTS
+
+    tts = gTTS(text=text, lang=lang or "en", slow=False)
+    tts.save(str(output_path))
+    return output_path
+
+
+def build_voiceover_layers(config: dict[str, Any], workdir: Path) -> tuple[list[Any], list[tuple[float, float]]]:
+    voiceover_cfg = config.get("audio", {}).get("voiceover") or config.get("voiceover") or {}
+    if not voiceover_cfg:
+        return [], []
+
+    engine = voiceover_cfg.get("engine", DEFAULT_TTS_ENGINE)
+    voice = voiceover_cfg.get("voice", DEFAULT_TTS_VOICE)
+    lang = voiceover_cfg.get("lang", "en")
+    rate = voiceover_cfg.get("rate", "+0%")
+    volume = float(voiceover_cfg.get("volume", 1.0))
+    default_fade_in = float(voiceover_cfg.get("fade_in", 0.08))
+    default_fade_out = float(voiceover_cfg.get("fade_out", 0.15))
+
+    segments = voiceover_cfg.get("segments")
+    layers: list[Any] = []
+    ranges: list[tuple[float, float]] = []
+
+    async def render_segment(idx: int, segment: dict[str, Any]) -> None:
+        text = str(segment.get("text", "")).strip()
+        if not text:
+            return
+        start = float(segment.get("start", 0) or 0)
+        duration = parse_duration(segment.get("duration"))
+        output = workdir / f"voiceover-{idx:02d}-{slugify(text)}.mp3"
+        await synthesize_speech(text, output, segment.get("engine", engine), segment.get("voice", voice), segment.get("lang", lang), segment.get("rate", rate))
+        audio = AudioFileClip(str(output)).volumex(float(segment.get("volume", volume)))
+        if duration is not None and audio.duration > duration:
+            audio = audio.subclip(0, duration)
+        if segment.get("fade_in", default_fade_in):
+            audio = audio.audio_fadein(float(segment.get("fade_in", default_fade_in)))
+        if segment.get("fade_out", default_fade_out):
+            audio = audio.audio_fadeout(float(segment.get("fade_out", default_fade_out)))
+        audio = audio.set_start(start)
+        layers.append(audio)
+        effective_duration = duration if duration is not None else audio.duration
+        ranges.append((start, start + effective_duration))
+
+    if isinstance(segments, list) and segments:
+        async def runner() -> None:
+            for idx, segment in enumerate(segments):
+                if isinstance(segment, dict):
+                    await render_segment(idx, segment)
+
+        asyncio.run(runner())
+        return layers, coalesce_ranges(ranges)
+
+    text = str(voiceover_cfg.get("text", "")).strip()
+    if text:
+        output = workdir / f"voiceover-{slugify(text)}.mp3"
+        asyncio.run(synthesize_speech(text, output, engine, voice, lang, rate))
+        audio = AudioFileClip(str(output)).volumex(volume)
+        audio = audio.audio_fadein(default_fade_in).audio_fadeout(default_fade_out)
+        start = float(voiceover_cfg.get("start", 0) or 0)
+        duration = parse_duration(voiceover_cfg.get("duration"))
+        if duration is not None and audio.duration > duration:
+            audio = audio.subclip(0, duration)
+        audio = audio.set_start(start)
+        layers.append(audio)
+        effective_duration = duration if duration is not None else audio.duration
+        ranges.append((start, start + effective_duration))
+
+    return layers, coalesce_ranges(ranges)
+
+
+def extend_audio_to_duration(audio: Any, duration: float) -> Any:
+    if audio.duration >= duration:
+        return audio.subclip(0, duration)
+    repeats = max(1, math.ceil(duration / audio.duration))
+    copies = [audio] * repeats
+    return concatenate_audioclips(copies).subclip(0, duration)
+
+
+def build_music_layers(config: dict[str, Any], workdir: Path, duration: float, duck_ranges: list[tuple[float, float]]) -> list[Any]:
+    audio_cfg = config.get("audio", {})
+    music_cfg = audio_cfg.get("music") or config.get("music") or []
+    if isinstance(music_cfg, dict):
+        music_cfg = [music_cfg]
+
+    layers: list[Any] = []
+    for idx, track in enumerate(music_cfg):
+        if not isinstance(track, dict) or not track.get("source"):
+            continue
+        source_path = download_source(str(track["source"]), workdir)
+        music = AudioFileClip(str(source_path))
+        music = extend_audio_to_duration(music, duration)
+        start = float(track.get("start", 0) or 0)
+        volume = float(track.get("volume", DEFAULT_MUSIC_VOLUME))
+        duck_volume = float(track.get("duck_volume", DEFAULT_DUCK_VOLUME))
+        duck_under_voiceover = bool(track.get("duck_under_voiceover", True))
+        music = music.set_start(start)
+
+        ranges = coalesce_ranges(duck_ranges) if duck_under_voiceover else []
+        cursor = 0.0
+        if ranges:
+            for range_start, range_end in ranges:
+                if range_start > cursor:
+                    normal = music.subclip(cursor, range_start).volumex(volume).set_start(start + cursor)
+                    layers.append(normal)
+                ducked = music.subclip(range_start, range_end).volumex(duck_volume).set_start(start + range_start)
+                layers.append(ducked)
+                cursor = range_end
+            if cursor < duration:
+                tail = music.subclip(cursor, duration).volumex(volume).set_start(start + cursor)
+                layers.append(tail)
+        else:
+            layers.append(music.volumex(volume))
+
+    return layers
+
+
+def build_scene_video(scene: dict[str, Any], workdir: Path, render_size: tuple[int, int], default_transition: float) -> tuple[Any, float, float]:
+    clip = source_to_video_clip(scene, workdir, render_size)
+    base_duration = parse_duration(scene.get("duration")) or clip.duration
+    transition_in = float(scene.get("transition_in", scene.get("transition", {}).get("in", default_transition) if isinstance(scene.get("transition"), dict) else default_transition) or 0)
+
+    target_duration = min(clip.duration, base_duration + transition_in)
+    if target_duration < clip.duration:
+        clip = clip.subclip(0, target_duration)
+
+    start = float(scene.get("start", 0) or 0) - transition_in
+    clip = clip.set_start(max(0.0, start))
+    if transition_in > 0:
+        clip = clip.crossfadein(transition_in)
+    if scene.get("opacity") is not None:
+        clip = clip.set_opacity(float(scene["opacity"]))
+
+    return clip, base_duration, transition_in
+
+
+def build_project_timeline(config: dict[str, Any], workdir: Path) -> tuple[Any, list[Any], list[tuple[float, float]]]:
+    render_cfg = config.get("render", {})
+    render_size = tuple(render_cfg.get("size", DEFAULT_RENDER["size"]))
+    fps = int(render_cfg.get("fps", DEFAULT_RENDER["fps"]))
+    default_transition = float(config.get("transitions", {}).get("default_duration", DEFAULT_TRANSITION))
+
+    timeline = config.get("timeline") or {}
+    scenes = timeline.get("scenes") if isinstance(timeline.get("scenes"), list) else None
+    clips: list[Any] = []
+    overlays: list[Any] = []
+    scene_ranges: list[tuple[float, float]] = []
+
+    if scenes:
+        running_start = 0.0
+        for scene in scenes:
+            if not isinstance(scene, dict) or not scene.get("source"):
+                continue
+            scene = dict(scene)
+            scene_start = float(scene.get("start", running_start) or running_start)
+            scene["start"] = scene_start
+            clip, scene_duration, _transition_in = build_scene_video(scene, workdir, render_size, default_transition)
+            clips.append(clip)
+            scene_ranges.append((scene_start, scene_start + scene_duration))
+
+            for layer in scene.get("overlays", []) or []:
+                if isinstance(layer, dict):
+                    layer = dict(layer)
+                    layer["start"] = float(layer.get("start", 0) or 0) + scene_start
+                    overlays.append(build_overlay_clip(layer, workdir))
+
+            running_start = scene_start + scene_duration
+
+        base = CompositeVideoClip(clips, size=render_size).set_duration(max(end for _, end in scene_ranges) if scene_ranges else 0)
+    else:
+        clip_sources = config.get("clip_sources", [])
+        if not clip_sources:
+            raise ValueError("Config must include timeline.scenes or clip_sources")
+
+        current_start = 0.0
+        for entry in clip_sources:
+            if not isinstance(entry, dict) or not entry.get("source"):
+                continue
+            entry = dict(entry)
+            entry.setdefault("start", current_start)
+            clip, scene_duration, _transition_in = build_scene_video(entry, workdir, render_size, default_transition)
+            clips.append(clip)
+            current_start = float(entry["start"]) + scene_duration
+            scene_ranges.append((float(entry["start"]), float(entry["start"]) + scene_duration))
+
+        base = CompositeVideoClip(clips, size=render_size).set_duration(max(end for _, end in scene_ranges) if scene_ranges else 0)
+
+        for entry in config.get("overlays", []) or []:
+            if isinstance(entry, dict):
+                overlays.append(build_overlay_clip(dict(entry), workdir))
+
+    if overlays:
+        final = CompositeVideoClip([base, *overlays], size=render_size).set_duration(base.duration)
+    else:
+        final = base
+
+    audio_layers, voice_ranges = build_voiceover_layers(config, workdir)
+    audio_layers.extend(build_music_layers(config, workdir, final.duration, voice_ranges))
+    if audio_layers:
+        final_audio = CompositeAudioClip(audio_layers).set_duration(final.duration)
+        final = final.set_audio(final_audio)
+
+    return final, clips, overlays
 
 
 def ensure_output_path(path: Path) -> Path:
@@ -224,7 +565,7 @@ def ensure_output_path(path: Path) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate a stitched and overlaid MP4 from JSON config.")
+    parser = argparse.ArgumentParser(description="Generate a professional pitch video from JSON config.")
     parser.add_argument("--config", default="example.config.json", help="Path to JSON config file")
     parser.add_argument("--output", default=None, help="Output MP4 path")
     args = parser.parse_args()
@@ -233,44 +574,34 @@ def main() -> None:
     config = load_json(config_path)
     output_path = ensure_output_path(Path(args.output or config.get("output", "output/generated-video.mp4")))
 
-    render = config.get("render", {})
-    render_size = tuple(render["size"]) if render.get("size") else None
-    fps = int(render.get("fps", 24))
-
-    clip_sources = config.get("clip_sources", [])
-    if not clip_sources:
-        raise ValueError("Config must include at least one clip_sources entry.")
-
-    overlays = config.get("overlays", [])
+    render_cfg = config.get("render", {})
+    fps = int(render_cfg.get("fps", DEFAULT_RENDER["fps"]))
 
     with tempfile.TemporaryDirectory() as tmpdir:
         workdir = Path(tmpdir)
-        clips = [source_to_clip(dict(entry), workdir) for entry in clip_sources]
+        final, clips, overlays = build_project_timeline(config, workdir)
 
-        if render_size:
-            clips = [clip.resize(newsize=render_size) for clip in clips]
-
-        base = concatenate_videoclips(clips, method="compose")
-        overlay_clips = [build_overlay_clip(dict(entry), workdir) for entry in overlays]
-
-        if render_size:
-            final = CompositeVideoClip([base, *overlay_clips], size=render_size)
-        else:
-            final = CompositeVideoClip([base, *overlay_clips], size=base.size)
-
+        export = config.get("export", {})
         final.write_videofile(
             str(output_path),
             fps=fps,
             codec="libx264",
             audio_codec="aac",
-            threads=4,
+            preset=export.get("preset", "slow"),
+            threads=int(export.get("threads", max(2, (os.cpu_count() or 4) - 1))),
+            audio_bitrate=export.get("audio_bitrate", "320k"),
+            ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart", "-crf", str(export.get("crf", 18))],
+            temp_audiofile=str(workdir / "temp-audio.m4a"),
+            remove_temp=True,
         )
 
         final.close()
-        base.close()
         for clip in clips:
-            clip.close()
-        for overlay in overlay_clips:
+            try:
+                clip.close()
+            except Exception:
+                pass
+        for overlay in overlays:
             try:
                 overlay.close()
             except Exception:

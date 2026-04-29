@@ -15,6 +15,7 @@ permissions:
 jobs:
   render:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -35,14 +36,17 @@ jobs:
           pip install -r requirements.txt
 
       - name: Render MP4
+        env:
+          PYTHONUNBUFFERED: "1"
         run: |
-          python generate_video.py --config example.config.json --output output/generated-video.mp4
+          mkdir -p output
+          python generate_video.py --config example.config.json --output output/osv-pitch.mp4
 
       - name: Upload MP4 artifact
         uses: actions/upload-artifact@v4
         with:
           name: generated-video
-          path: output/generated-video.mp4
+          path: output/osv-pitch.mp4
           if-no-files-found: error
 
       - name: Create GitHub Release
@@ -50,4 +54,4 @@ jobs:
         with:
           tag_name: render-${{ github.run_id }}
           name: Latest Render
-          files: output/generated-video.mp4
+          files: output/osv-pitch.mp4
